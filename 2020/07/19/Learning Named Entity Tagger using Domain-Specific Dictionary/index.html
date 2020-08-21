@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"jasonguojz.github.io","root":"/blog/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Learning Named Entity Tagger using Domain-Specific Dictionary——AutoNER">
+<meta property="og:url" content="https://jasonguojz.github.io/blog/2020/07/19/Learning%20Named%20Entity%20Tagger%20using%20Domain-Specific%20Dictionary/index.html">
+<meta property="og:site_name" content="Guo Jiazhen&#39;s Blog">
+<meta property="og:description" content="Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200817090907042.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200817093213501.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722154950277.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722154937486.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722155717967.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722160807135.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200817090907042.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722162125232.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722162152857.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722163940010.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722164540590.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722170417291.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722170432069.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722232107701.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722232117169.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200723000830820.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200723001042233.png">
+<meta property="article:published_time" content="2020-07-18T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-08-21T08:56:39.856Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200817090907042.png">
+
+<link rel="canonical" href="https://jasonguojz.github.io/blog/2020/07/19/Learning%20Named%20Entity%20Tagger%20using%20Domain-Specific%20Dictionary/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Learning Named Entity Tagger using Domain-Specific Dictionary——AutoNER | Guo Jiazhen's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Guo Jiazhen's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/19/Learning%20Named%20Entity%20Tagger%20using%20Domain-Specific%20Dictionary/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="谦卑">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Guo Jiazhen's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Learning Named Entity Tagger using Domain-Specific Dictionary——AutoNER
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-07-19 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-19T00:00:00+08:00">2020-07-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-21 16:56:39" itemprop="dateModified" datetime="2020-08-21T16:56:39+08:00">2020-08-21</time>
+              </span>
+
+          
+            <div class="post-description">Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><a target="_blank" rel="noopener" href="https://shangjingbo1226.github.io/AutoNER/">Project地址</a></p>
+<ol>
+<li><p>为解决标注数据不足问题，通常可以找相似领域的有标记数据做领域迁移、用领域词典做远程监督生成标记数据——本文讨论如何使用领域词表来生成标注数据。用词表直接匹配的问题是：</p>
+<ul>
+<li>词典无法覆盖所有实体</li>
+<li>相同实体对应多个类别的情况(缺少上下文)，或是遇到词表中不存在的类别</li>
+</ul>
+<p>(在 entity span中做，包含共指消解吗)</p>
+</li>
+<li><p>先提出了解决传统 CRF 无法做多标签分类，现有模型无法解决entity 多label问题的Fuzzy-LSTM-CRF with Modified IOBES：</p>
+</li>
+</ol>
+<p>   <img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200817090907042.png" alt="image-20200817090907042" style="zoom:80%;" /></p>
+<p>   <img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200817093213501.png" alt="image-20200817093213501" style="zoom:80%;" /></p>
+<ol>
+<li><p>提出了一种 Tie or Break 的标注方案</p>
+<ul>
+<li>若当前词与上一个词在同一个实体内 Tie (O)</li>
+<li>若其中一个词属于一个未知类型的实体短语，则该词的前后都是 Unknown (U)</li>
+<li>其它情况都默认 Break (I)</li>
+<li>某个实体类型未知 None (N)</li>
+</ul>
+</li>
+<li><p>实体边界的远程监督信息和实体类别的远程监督信息是分开来计算的。这是为了能充分利用非领域词典——高质量短语词表中的词的边界信息。</p>
+</li>
+<li><p>模型使用的是一个用 Highway network 优化的 BiLSTM 来做 span prediction</p>
+</li>
+</ol>
+<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h3><p>深度神经模型的最新进展允许我们构建没有手工特征的可靠命名实体识别 reliable  named  entity  recognition（NER）系统。但是，此类方法需要大量的手动标记训练数据。已经有用远程监督（与外部词典一起）替换人类注释的方法，但是生成的嘈杂标签对学习有效的神经模型提出了重大挑战。在此，我们提出两种神经模型来适应字典中的嘈杂远程监督。首先，在traditional  sequence  labeling  framework下，我们提出了一种修正的模糊CRF层来处理tokens  with  multiple  possible  labels。在确定了远程监管中的嘈杂标签的性质之后，我们提出了神经模型AutoNER，具有新的$\text{Tie or Break}$ 方案。此外，我们还讨论了如何优化远程监管为更好的NER性能。在三个基准数据集上进行的大量实验表明，<strong>仅使用字典dictionary就可以实现AutoNER的最佳性能，而无需付出额外的人力</strong>，并且使用最新的监督基准可以提供具有竞争力的结果</p>
+<h3 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1    Introduction"></a>1    Introduction</h3><p>最近，在构建没有手工特征的可靠命名实体识别（NER）模型方面已进行了广泛的努力。然而，大多数现有方法需要大量的人工注释语句来训练监督模型（例如神经序列模型）（Liu等人，2018; Ma和Hovy，2016; Lample等人，2016; Finkel等人，2005）。这在特定的域下尤其具有挑战性，<strong>因为domain-expert annotation is expensive and/or slow to obtain</strong>。</p>
+<p>为了减轻人类的努力，<strong>已应用了远程监管来自动生成标记数据</strong>，并已在各种自然语言处理任务中获得成功，包括短语挖掘（Shang等人，2018），实体识别entity recognition（Renet等人，2015; Fries等人）（2017； He，2017），方面项提取aspect term extraction（Giannakopoulos等，2017）和关系提取relation  extraction（Mintz等，2009）。同时，<strong>开放式知识库（或词典</strong>）正变得越来越流行，例如通用领域的 WikiData 和YAGO，以及生物医学领域的MeSH和CTD<strong>。这样的词典的存在使得有可能大规模生成 NER 的训练数据而无需额外的人工。</strong></p>
+<p><strong>现有的远程监督的 NER 模型通常通过启发式匹配规则来解决实体文段检测entity  span  detection 问题</strong>，例如基于POS标签的正则表达式regular expression（Ren等，2015; Fries等，2017）和精确的字符串匹配exact  string  matching（Giannakopoulos等，2017; He，2017）。在这些模型中，每个不匹配的token 都将被标记为非实体non-entity。但是，<strong>由于大多数现有词典对实体的覆盖范围有限</strong>，<strong>因此简单地忽略不匹配的标记可能会引入假阴性的labels</strong>（例如，图1中的“前列腺素合成”）。因此，我们建<strong>议从语料库中提取高质量的out-of-dictionary phrases</strong>，并将其标记为具有特殊“未知”类型的潜在实体 potential  entities  with  a  special  “unknown”  type。<strong>而且，由于两个不同类型的实体可以在字典中共享相同的表面名称。，因此可以用多种类型标记每个实体范围every  entity  span  in  a sentence can be tagged with multiple types,</strong> 。为了解决这些挑战，我们用两个带有自定义标记方案 customized tagging schemes来对两个网络模型结构进行比较。</p>
+<p>我们从在<strong>传统序列标签框架下调整模型 traditional sequence labeling framework</strong>开始。<strong>NER模型</strong>通常基于<strong>条件随机场(CRF)</strong>用$\text{IOB}$ 或者<strong>$\text{IOBES}$</strong> tagging scheme，但是，<strong>这种设计不能处理 multi-label  tokens.</strong> ($\color{red}{传统CRF不能解决多标签标注问题}$) 因此，我们将<strong>LSTM-CRF中的常规CRF层</strong>（Lample等，2016）<strong>自定义为Fuzzy CRF层</strong>，该层允许每个tokentoken 具有多个标签而不会牺牲计算效率。</p>
+<p>为了<strong>适应远程监督生成的不完善标签imperfect labels</strong>，提出了一种<strong>新的预测模型</strong>prediction model。具体而言，我们建议预测两个相邻token是否在相同的实体提及中绑定 tied in thesame entity mention or not（即broken），而不是预测每个单个token的标签。 T<strong>he key motivation is that, even the boundaries of an entity  mention  are  mismatched  by  distant  supervision,  most  of  its  inner  ties  are  not  affected,  and thus more robust to noise</strong>。因此，我们设计了一种新的$\text{Tie or Break}$ 方案，以更好地利用嘈杂的远程监督。因此，我们设计neural architecture <strong>首先通过forms  all  possible  entity  spans  by  detecting such ties,</strong>，然后<strong>识别每个span的实体类型</strong>。$\text{Tie or Break}$ 方案和neural  architecture form我们的新模型<strong>AutoNER</strong>，在我们的实验中，它被证明比Fuzzy CRF模型更好地工作。</p>
+<h4 id="贡献"><a href="#贡献" class="headerlink" title="贡献"></a>贡献</h4><ol>
+<li><strong>AutoNER</strong>：$\text{Tie or Break}$ 方案和neural  architecture ，<strong>for the distantly supervised NER task</strong></li>
+<li><strong>Fuzzy-LSTM-CRF  model：</strong> strong distantly supervised baseline</li>
+<li><strong>refine distant supervision</strong> for better  NER  performance：incorporating high-quality phrases to reduce false-negative labels，进行了消融实验</li>
+</ol>
+<h3 id="2-Overview"><a href="#2-Overview" class="headerlink" title="2   Overview"></a>2   Overview</h3><p>我们的<strong>目标是使用且仅使用字典来学习命名实体</strong>。<em>每个字典条目均包含以下内容：1）实体的表面名称surface name，包括其<strong>规范名称</strong>和<strong>同义词的列表</strong>；2）实体类型。</em>考虑到词典的覆盖范围有限，我们<strong>通过<em>添加高质量的短语high-quality phrases作为类型未知的潜在实体</em>来扩展现有的词典</strong></p>
+<p>给定一个原始的语料库raw  corpus 和字典，我们<strong>首先通过精确的字符串匹配 string  matching生成实体标签 entity   labels </strong>（包括未知的labels），其中冲突匹配通过最大化匹配标记的总数来解决 conflicted matches  are  resolved  by  maximizing  the  total number  of  matched  tokens（Etzioni等，2005； Hanisch等，2005；Lin et al。，2012; He，2017）</p>
+<p>根据字典匹配dictionary matching的结果，每个tokentoken都属于以下三类categories之一：1）它属于具有一种或多种已知类型types的实体提及 entity mention；2）属于未知类型的实体提及；3）标记为非实体。</p>
+<h3 id="3-Neural-Models"><a href="#3-Neural-Models" class="headerlink" title="3    Neural Models"></a>3    Neural Models</h3><h4 id="3-1-Fuzzy-LSTM-CRF-with-Modified-IOBES"><a href="#3-1-Fuzzy-LSTM-CRF-with-Modified-IOBES" class="headerlink" title="3.1    Fuzzy-LSTM-CRF with Modified IOBES"></a>3.1    Fuzzy-LSTM-CRF with Modified IOBES</h4><p><strong>under  the  traditional  sequence  labeling  framework</strong></p>
+<p><strong>State-of-the-art  named  entity  taggers</strong>使用$\text{IOB}$ 或者<strong>$\text{IOBES}$</strong> 标注集，为sequence  labeling  framework（Ratinov和Roth，2009年），因此需要<strong>CRF层</strong>来捕获 输出标签 之间的依赖性<strong>dependency between labels</strong>。但是，原始方案和常规CRF层都不能处理多类型或未知类型的tokentokens。因此，我们相应地提出了<strong>改进的IOBES方案</strong>和<strong>Fuzzy CRF层</strong></p>
+<h5 id="Modified-IOBES"><a href="#Modified-IOBES" class="headerlink" title="Modified  IOBES"></a>Modified  IOBES</h5><p>为了减少标注成本，文中采用Distant-supervision方法进行标注，即预先收集需要识别的实体词典库，采用词匹配的方法，在待处理文本中将词典中匹配到的实体标记出来。标注方法如下:</p>
+<p>我们根据三个token类别定义标签:</p>
+<ol>
+<li>如果一个token标记为一种或多种类型，则这个token用所有这些types和$\{\text{I,B,E,S}\}$中的一种，according to its positions in the matched entity mention</li>
+<li>类型未知的token，即词典中未出现的词，但属于词典中的高质量短语 high quality phrase。$\{\text{I,O,B,E,S}\}$所有五个都有可能，同时，分配了所有可用的类型。例如，如果只有两个可用types Chemical和Disease，则总共有2*4+1=9中labels ，但要注意 $\{\text{I,O,B,E,S}\}$的标注顺序，比如B的后面不能再跟一个B</li>
+<li>对于标记为非实体的token，其标记$\{\text{O}\}$</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722154950277.png" alt="image-20200722154950277" style="zoom:80%;" /></p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722154937486.png" alt="image-20200722154937486" style="zoom:80%;" /></p>
+<h5 id="Fuzzy-LSTM-CRF"><a href="#Fuzzy-LSTM-CRF" class="headerlink" title="Fuzzy-LSTM-CRF"></a>Fuzzy-LSTM-CRF</h5><p><strong>我们将LSTM-CRF模型（Lample等，2016）修改为Fuzzy-LSTM-CRF模型，以支持修改后的IOBES标签。</strong></p>
+<p><strong>输入：</strong>一个word   sequence $X_1,X_2,…,X_n$</p>
+<p>它首先通过单词级 word-level <strong>BiL-STM</strong>(forward and backward LSTMs)</p>
+<p>在串联了两个方向输出的 representations后，该模型为每个输出标签做出独立的标记决策——输出分数$P_{i,y_j}$——the word $X_i$ being the label $y_j$</p>
+<p>我们遵循先前的工作（Liu等人，2018; Maand Hovy，2016; Lample等人，2016）来定义预测序列的得分，预测序列 $y_1,y_2,…,y_n$ 的得分。其中，$\phi_{y_i,y_{i+1}}$ 是从label $y_i$ 到 label $y_{i+1}$ 的转移概率，$\phi$ 是$(k+2) \times (k+2)$ 大小的矩阵，Two additional labels <strong>start</strong> and <strong>end</strong> are used (only used in the CRF layer) to represent the beginning and end of a sequence, respectively</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722155717967.png" alt="image-20200722155717967" style="zoom:80%;" /></p>
+<p>传统的CRF层将唯一有效标签序列 only valid label sequence的可能性最大化，只需要最大化一条标注路径的概率即可，但<strong>在修改的IOBES方案中，一个句子可能具有多个有效的标签序列</strong>，由于存在多条路径，那么我们就需要同时最大化所有路径的概率，因此，我们<strong>将常规CRF层扩展为模糊CRF模型fuzzy CRF model</strong>。</p>
+<p>它枚举IOBES标签和所有匹配的实体类型，Objective是最大化所有可能的标签序列的总概率。优化目标：</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722160807135.png" alt="image-20200722160807135" style="zoom:80%;" /></p>
+<p>在训练过程中，we maximize the log-likelihood function of上式</p>
+<p>S:路径得分，计算方法与传统的CRF相同</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200817090907042.png" alt="image-20200817090907042" style="zoom:80%;" /></p>
+<p><strong>the  state-of-the-art  distantly  supervised phrase mining method ：AutoPhrase (Shanget  al.,  2018)</strong></p>
+<p>预标注中提到的高质量短语（high quality phrases），我们通过AutoPhrase的方法从文本中挖掘（论文：<a href="https://link.zhihu.com/?target=https%3A//arxiv.org/pdf/1702.04457.pdf">Automated phrase mining from massive text corpora</a>，代码：<a href="https://link.zhihu.com/?target=https%3A//github.com/shangjingbo1226/AutoPhrase">AutoPhrase</a>）通过ulabeled语料和短语词典，设置适当的阈值，我们可以挖掘出高质量的短语。对于挖掘出来的短语，如果没在词典中出现过，我们就把它加入单独的一个“unknown”词典。</p>
+<h4 id="3-2-AutoNER-with-“Tie-or-Break”"><a href="#3-2-AutoNER-with-“Tie-or-Break”" class="headerlink" title="3.2  AutoNER with “Tie or Break”"></a>3.2  AutoNER with “Tie or Break”</h4><p><strong>着眼于相邻tokens之间的联系ties</strong>，即它们 are <strong>tied in the same entity mentions</strong> or <strong>broken into two parts</strong>。因此，我们为此方案设计了一种新颖的神经模型</p>
+<h5 id="“Tie-or-Break”-Tagging-Scheme"><a href="#“Tie-or-Break”-Tagging-Scheme" class="headerlink" title="“Tie  or  Break”  Tagging  Scheme"></a>“Tie  or  Break”  Tagging  Scheme</h5><p>具体来说，对于每两个相邻的tokens，它们之间的连接标记为</p>
+<ul>
+<li><strong>Tie：</strong>  当两个token与同一实体匹配时，属于同一个实体mention即前后两个token构成一个实体mention</li>
+<li><strong>Unknown: </strong> if  at  least  one  of  the  tokens  belongs to  an  unknown-typed  high-quality  phrase;</li>
+<li>否则为 <strong>Break</strong></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722162125232.png" alt="image-20200722162125232" style="zoom:80%;" /></p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722162152857.png" alt="image-20200722162152857" style="zoom:80%;" /></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/63109138">reference</a></p>
+<p>distant-supervision指出“ceramic unibody”匹配到了AspectTerm词典，8GB RAM是一个unknown高质量短语。因此ceramic unibody之间就被标记为Tie，短语8GB RAM的前后和中间就标记为Unknown。两个连续的Break标记之间的tokens就形成了一个span，每一个span都将被打上标签集中的所有匹配上的标签（词典匹配）。如果没有匹配到实体类型，我们就将其标记为None</p>
+<h5 id="AutoNER"><a href="#AutoNER" class="headerlink" title="AutoNER"></a>AutoNER</h5><p>在<strong>“Tie  or  Break”  Tagging  Scheme</strong>中，entity  spans  and  entity  types  are  encoded  <strong>into  two folds</strong>.  Therefore, we <strong>separate the entity span detection and entity type prediction into two steps.</strong></p>
+<p>实体span和type分两步编码，将实体span检测和实体类型预测分为两步执行。</p>
+<ul>
+<li><strong>entity span detection：</strong>在预测span序列时，只预测是tie还是break，在计算损失时，忽略真实为Unknown的token。而在计算type损失的时候，包括了序列中所有的token。构建一个二元分类器，输出类别为Break和Tie；如果预标注是Unknown类型则直接跳过。在第i个token和它的前一个token间，将BiLSTM 的输出串联得到一个新的<strong>特征向量 $u_i$ ，</strong>被输入一个 sigmoid 层，<strong>估计这里是一个 Break 的概率</strong></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722163940010.png" alt="image-20200722163940010" style="zoom:80%;" /></p>
+<ul>
+<li><strong>entity types：</strong>  BiLSTM的输出将 re-aligned  以形成一个新的特征向量 $v_i$ , for $i th$ span candidate。 $v_i$ 会被输入softmax layer，输出 $v_i$ 在每个实体类别上的概率，估计entity type分布为    </li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722164540590.png" alt="image-20200722164540590" style="zoom:80%;" /></p>
+<p>​    由于 one span 可以被标记为多种类型，我们将 possible set of types for $i th$ entity span candidate 的可能类型标记为 $L_i$，第i个span 的 候选实体类型集</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722170417291.png" alt="image-20200722170417291" style="zoom:80%;" /></p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722170432069.png" alt="image-20200722170432069" style="zoom:80%;" /></p>
+<p><strong><em>因为无明确的监督信息，因此采用，可能type集合内的概率分布作为监督信息，使得概率主要分配在可能的type集合上而不是整个type集中</em></strong></p>
+<p>  AutoNER 没有 CRF 层和 Viterbi 解码，则在 inference 时更加高效</p>
+<h4 id="3-3-Remarks-on-“Unknown”-Entities"><a href="#3-3-Remarks-on-“Unknown”-Entities" class="headerlink" title="3.3    Remarks on “Unknown” Entities"></a>3.3    Remarks on “Unknown” Entities</h4><p><strong>“Unknown”实体提及</strong> 不是其他类型的实体，而是<strong>我们对它们的边界不太确定和/或无法根据远程监管来识别其类型的tokenless confident about their boundaries and/or cannot identify their types based on the distant supervision。</strong>例如，在图1中，“prostaglandin synthesis”是“Unknown”的  token  span。 distant  supervision无法确定它是 Chemical 还是 Disease，是其他类型的实体，是两个单独的single-token  entities还是（部分）不是实体？因此，在<strong>FuzzyCRF模型</strong>中，我们为这些标记分配了所有可能的标签。</p>
+<p>在我们的AutoNER模型中，这些<strong>“Unknown” positions</strong>具有undefined boundary and type losses，原因是：（1）它们使边界标签不清楚make the boundary labels unclear；以及（2）没有类型标签 type labels。由于边界的标签和实体类型都是unknown，在训练时它们被跳过。</p>
+<h3 id="4-Distant-Supervision-Refinement"><a href="#4-Distant-Supervision-Refinement" class="headerlink" title="4    Distant Supervision Refinement"></a>4    Distant Supervision Refinement</h3><p>完善远程监管的两种技术，以更好地命名实体标签——都是说字典匹配</p>
+<h4 id="4-1-Corpus-Aware-Dictionary-Tailoring词典裁剪"><a href="#4-1-Corpus-Aware-Dictionary-Tailoring词典裁剪" class="headerlink" title="4.1    Corpus-Aware Dictionary Tailoring词典裁剪"></a>4.1    Corpus-Aware Dictionary Tailoring词典裁剪</h4><p>在字典匹配中，盲目使用<strong>完整词典</strong>可能会<strong>引入假阳性标签</strong>，因为存在许多<strong>超出给定语料库范围的实体</strong>，但它们的<strong>别名可以匹配</strong>。</p>
+<p>例如，当字典中具有不相关的字符名称“ Wednesday Addams” 及其别名“ Wednesday”时， many  Wednesday’s  will  be wrongly marked as persons<strong>。在理想情况下，词典应覆盖并且仅覆盖给定语料库中出现的实体</strong>，以确保在保持合理覆盖率的同时确保较高的精度。</p>
+<p>作为近似，我们通过<strong>排除规范名称从未出现在给定语料库中的实体</strong>，将原始词典调整为<strong>与语料库相关的原始词典子集</strong>。背后的<strong>直觉intuition</strong>是，<strong>为了避免歧义</strong>，人们可能会<strong>至少提及一次实体的规范名称</strong>。(当说到某个实体对象时，人们至少会提起一次其正式的名称。因此，我们删除词典中那些正式名称从来没有出现过的实体（包括其别名），将能有效降低误召回。)例如，在生物医学领域，分别对BC5CDR和NCBI数据集中提到的实体的88.12％，95.07％成立，即<strong>至少提及一次canonical name</strong>。我们期望与在原始字典上训练的 NER model 相比，在这种调整后的字典的subset上训练的 NER model 具有更高的精度和合理的召回率</p>
+<h4 id="4-2-Unknown-Typed-High-Quality-Phrases"><a href="#4-2-Unknown-Typed-High-Quality-Phrases" class="headerlink" title="4.2    Unknown-Typed High-Quality Phrases"></a>4.2    Unknown-Typed High-Quality Phrases</h4><p>远程监管的另一个问题是关于假阴性标签false-negative labels。当token span无法与词典中的任何entity surface names匹配时，由于词典的覆盖范围有限，仍然很难确定其为非实体（即否定标签）。具体来说，一些字典范围之外的高质量短语 high-quality phrases 也可能是潜在的实体。</p>
+<p>We  utilize  the  state-of-the-art  <strong>distantly  supervised phrase mining method</strong>, <strong>AutoPhrase (Shanget  al.,  2018)。</strong> 以给定域中的<strong>语料库和字典</strong>作为输入，AutoPhrase<strong>仅需要未标记的文本和高质量短语的词典</strong>。我们通过设置<strong>阈值</strong>来获<strong>得高质量的多词和单词短语</strong> (e.g., 0.5and  0.9  respectively).   实际上，人们可以从<strong>同一域</strong>中<strong>查找更多未标记的文本</strong>（例如，PubMed论文和Amazon笔记本电脑评论），并使用<strong>相同的特定于域的词典</strong> 执行 NER 任务。在我们的实验中，对于生物医学领域，我们使用从整个 PubTator 数据库中 均匀采样的686,568篇PubMed论文（约4％）的标题和摘要作为训练语料库。对于笔记本电脑评论领域，我们使用Amazon笔记本电脑评论数据集3，该数据集旨在用于aspect-based的情感分析（Wang等人，2011年）</p>
+<p>我们<strong>将 out-of-dictionary  phrases 视为具有“unknown”类型的潜在实体</strong>，并将其<strong>合并为新的字典条目</strong> incorporate them as new dictionary entries。此后，仅在此扩展词典中无法匹配的 token span 将被标记为   non-entity 。<strong>Being aware of these high-quality phrases,</strong> we expect the trained NER tagger should be more accurate。(通过这种方法，我们只需要准备大量的目标领域无标签语料和一个高质量的种子词典即可，通过调节posing threshods，我们很容易获取大量高质量的短语数据。我们对些短语数据进行筛选，除去那些在其它词典中出现过的短语，剩下的短语集构成“unknown”词典。在进行远程监督时，只有同时未被实体类型词典和unknown词典匹配的部分才被标记为non-entity。)</p>
+<h3 id="5-Experiments"><a href="#5-Experiments" class="headerlink" title="5    Experiments"></a>5    Experiments</h3><h4 id="5-1-Experimental-Settings"><a href="#5-1-Experimental-Settings" class="headerlink" title="5.1    Experimental Settings"></a>5.1    Experimental Settings</h4><h4 id="Datasets——corpus"><a href="#Datasets——corpus" class="headerlink" title="Datasets——corpus"></a>Datasets——corpus</h4><p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722232107701.png" alt="image-20200722232107701" style="zoom:80%;" /><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200722232117169.png" alt="image-20200722232117169" style="zoom:100%;" /></p>
+<p>前两个数据集已经划分为三个子集：训练集，开发集和测试集。对于 LaptopReview 数据集，我们遵循（Gian-nakopoulos等人，2017），并从训练集中随机选择20％作为开发集。 Only raw texts are provided as the input of distantly supervised models，而gold training set 用于监督模型.</p>
+<h4 id="Domain-Specific-Dictionary"><a href="#Domain-Specific-Dictionary" class="headerlink" title="Domain-Specific  Dictionary"></a>Domain-Specific  Dictionary</h4><p>对于生物医学数据集，该词典是 <strong>MeSH 数据库</strong><a target="_blank" rel="noopener" href="https://www.nlm.nih.gov/mesh/download_mesh.html">MeSH</a>和 <strong>CTD Chemical and  Disease<a target="_blank" rel="noopener" href="http://ctdbase.org/downloads/">CTD</a> 词汇集</strong>的组合。该词典包含322,882个 Chemical and Disease entity surfaces。</p>
+<p>For the <strong>laptop review dataset</strong><a target="_blank" rel="noopener" href="https://www.computerhope.com/jargon.htm">laptop review</a>,  the dictionary has 13,457 computer terms crawled from a public website</p>
+<h4 id="Metric"><a href="#Metric" class="headerlink" title="Metric"></a>Metric</h4><p><strong>micro-averaged F1 score</strong></p>
+<h4 id="Parameters-and-Model-Training"><a href="#Parameters-and-Model-Training" class="headerlink" title="Parameters and Model Training"></a>Parameters and Model Training</h4><p>基于开发集中的分析，我们进行了带有动量的随机梯度下降的优化stochastic gradient descent  with  momentum。我们将批量大小和动量设置为10和0.9。最初将学习率设置为0.05，如果最近5轮中没有更好的发展F1，则学习率将降低40％。在模型中应用了ratio 为 0.5 的 Dropout 。为了获得更好的稳定性，我们使用 5.0 的梯度剪切 gradient clipping 。此外，我们在开发集中采用了early stopping </p>
+<h4 id="Pre-trained-Word-Embeddings"><a href="#Pre-trained-Word-Embeddings" class="headerlink" title="Pre-trained   Word   Embeddings"></a>Pre-trained   Word   Embeddings</h4><p>对于生物医学数据集，我们使用来自（Pyysalo等人，2013）的预训练的200维单词向量<a target="_blank" rel="noopener" href="http://bio.nlplab.org/">biomedical datasets</a>，这些向量在整个 PubMed abstracts，PubMed Central（PMC）的所有全文文章和英语 Wikipedia 上进行了训练。</p>
+<p>对于笔记本电脑评论数据集，我们使用 GloVe 100维度的预训练词向量<a target="_blank" rel="noopener" href="https://nlp.stanford.edu/projects/glove/">laptop  review  datase</a>，这些向量在 Wikipedi  和 GigaWord 上进行了训练</p>
+<h4 id="5-2-Compared-Methods"><a href="#5-2-Compared-Methods" class="headerlink" title="5.2    Compared Methods"></a>5.2    Compared Methods</h4><ul>
+<li><strong>Dictionary Match:</strong> 我们将其直接应用于测试集，以获得与字典中的表面名称完全相同的实体提及，通过多数投票分配类型，通过与之比较，我们可以检查神经模型相对于远程监督本身的改进</li>
+<li><strong>SwellShark：</strong> 在生物医学领域，可以说是最佳的远程监督模型，尤其是在 BC5CDR 和 NCBI-Disease 数据集上（Fries等人，2017）。它不需要人工注释的数据，但是，它需要额外的 expert effort 来进行 entity span detection，包括构建POS标签，设计有效的正则表达式以及针对特殊情况进行手动调整</li>
+<li><strong>Distant-LSTM-CRF:</strong> 在没有注释的训练数据的情况下，使用远程监督 LSTM-CRF model ，在 LaptopReview 数据集上获得了最佳性能</li>
+<li><strong>Supervised   benchmarks: </strong> </li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200723000830820.png" alt="image-20200723000830820" style="zoom:70%;" /></p>
+<h4 id="5-4-Distant-Supervision-Explorations"><a href="#5-4-Distant-Supervision-Explorations" class="headerlink" title="5.4    Distant Supervision Explorations"></a>5.4    Distant Supervision Explorations</h4><p><strong>消融实验</strong></p>
+<p>我们研究了我们在本节中提出的两种技术的有效性。通过消融实验。如表4所示，<strong>使用定制词典总是比使用原始词典获得更好的F1分数。</strong>通过使用量身定制的词典，AutoNER模型的精度将更高，而召回率将保持不变。例如，在NCBI-Disease数据集上，它可以将召回损失从63.54％从53.14％大幅提高到77.30％％to58.54％。此外，<strong>在字典中合并未知类型的高质量短语会显着提高AutoNER模型的每个分数</strong>，尤其是召回率。这些结果完全符合我们的预期</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Learning Named Entity Tagger using Domain-Specific Dictionary/image-20200723001042233.png" alt="image-20200723001042233" style="zoom:80%;" /></p>
+<h4 id="5-5-TestF1Scores-vs-Size-of-Raw-Corpus"><a href="#5-5-TestF1Scores-vs-Size-of-Raw-Corpus" class="headerlink" title="5.5    TestF1Scores vs. Size of Raw Corpus"></a>5.5    TestF1Scores vs. Size of Raw Corpus</h4><p>此外，当我们<strong>有不同大小的远程监督文本时</strong>，我们探索了 <strong>test F1 scores 的变化</strong>。我们从给定的原始语料中均匀地抽取句子样本，然后评估在所选句子上训练的 AutoNER 模型。</p>
+<p>我们还研究了提供黄金训练集时将发生的情况。曲线可在图3中找到。<strong>X轴是distantly  supervised  training  sentences 的数量</strong>，<strong>Y轴是测试集上的F1分数</strong>。</p>
+<p>仅使用远程监督时，一开始就可以观察到testF1分数的显着增长趋势，但是后来，随着越来越多的原始文本，增长率降低了。</p>
+<p>当 gold training set is available,，远程监督仍然对AutoNER有所帮助。从一开始，AutoNER的性能就不如监督基准测试。后来，在有足够 distantly supervised  sentences，AutoNER 的表现优于监督基准。我们认为有两个可能的原因：<strong>（1）对那些可匹配的实体提及，远程监管更重视。（2）黄金注释可能会错过一些不错但可匹配的实体提及</strong>。这些可以指导AutoNER训练到更通用的模型，并因此具有更高的testF1分数。</p>
+<h3 id="6-Related-Work"><a href="#6-Related-Work" class="headerlink" title="6    Related Work"></a>6    Related Work</h3><h3 id="7-Conclusion-and-Future-Work"><a href="#7-Conclusion-and-Future-Work" class="headerlink" title="7    Conclusion and Future Work"></a>7    Conclusion and Future Work</h3><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/135453456">reference1—命名实体识别 NER 论文综述</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/63109138">reference2——Named Entity Recognition</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/2020/07/18/Harnessing%20Deep%20Neural%20Networks%20with%20Logic%20Rules/" rel="prev" title="Harnessing Deep Neural Networks with Logic Rules">
+      <i class="fa fa-chevron-left"></i> Harnessing Deep Neural Networks with Logic Rules
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/blog/2020/07/22/On%20Calibration%20of%20Modern%20Neural%20Networks/" rel="next" title="On Calibration of Modern Neural Networks">
+      On Calibration of Modern Neural Networks <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Abstract"><span class="nav-number">1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Introduction"><span class="nav-number">2.</span> <span class="nav-text">1    Introduction</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B4%A1%E7%8C%AE"><span class="nav-number">2.1.</span> <span class="nav-text">贡献</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Overview"><span class="nav-number">3.</span> <span class="nav-text">2   Overview</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Neural-Models"><span class="nav-number">4.</span> <span class="nav-text">3    Neural Models</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-Fuzzy-LSTM-CRF-with-Modified-IOBES"><span class="nav-number">4.1.</span> <span class="nav-text">3.1    Fuzzy-LSTM-CRF with Modified IOBES</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Modified-IOBES"><span class="nav-number">4.1.1.</span> <span class="nav-text">Modified  IOBES</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Fuzzy-LSTM-CRF"><span class="nav-number">4.1.2.</span> <span class="nav-text">Fuzzy-LSTM-CRF</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-AutoNER-with-%E2%80%9CTie-or-Break%E2%80%9D"><span class="nav-number">4.2.</span> <span class="nav-text">3.2  AutoNER with “Tie or Break”</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E2%80%9CTie-or-Break%E2%80%9D-Tagging-Scheme"><span class="nav-number">4.2.1.</span> <span class="nav-text">“Tie  or  Break”  Tagging  Scheme</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#AutoNER"><span class="nav-number">4.2.2.</span> <span class="nav-text">AutoNER</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-Remarks-on-%E2%80%9CUnknown%E2%80%9D-Entities"><span class="nav-number">4.3.</span> <span class="nav-text">3.3    Remarks on “Unknown” Entities</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Distant-Supervision-Refinement"><span class="nav-number">5.</span> <span class="nav-text">4    Distant Supervision Refinement</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-Corpus-Aware-Dictionary-Tailoring%E8%AF%8D%E5%85%B8%E8%A3%81%E5%89%AA"><span class="nav-number">5.1.</span> <span class="nav-text">4.1    Corpus-Aware Dictionary Tailoring词典裁剪</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-Unknown-Typed-High-Quality-Phrases"><span class="nav-number">5.2.</span> <span class="nav-text">4.2    Unknown-Typed High-Quality Phrases</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Experiments"><span class="nav-number">6.</span> <span class="nav-text">5    Experiments</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-Experimental-Settings"><span class="nav-number">6.1.</span> <span class="nav-text">5.1    Experimental Settings</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Datasets%E2%80%94%E2%80%94corpus"><span class="nav-number">6.2.</span> <span class="nav-text">Datasets——corpus</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Domain-Specific-Dictionary"><span class="nav-number">6.3.</span> <span class="nav-text">Domain-Specific  Dictionary</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Metric"><span class="nav-number">6.4.</span> <span class="nav-text">Metric</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Parameters-and-Model-Training"><span class="nav-number">6.5.</span> <span class="nav-text">Parameters and Model Training</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Pre-trained-Word-Embeddings"><span class="nav-number">6.6.</span> <span class="nav-text">Pre-trained   Word   Embeddings</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-Compared-Methods"><span class="nav-number">6.7.</span> <span class="nav-text">5.2    Compared Methods</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-4-Distant-Supervision-Explorations"><span class="nav-number">6.8.</span> <span class="nav-text">5.4    Distant Supervision Explorations</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-5-TestF1Scores-vs-Size-of-Raw-Corpus"><span class="nav-number">6.9.</span> <span class="nav-text">5.5    TestF1Scores vs. Size of Raw Corpus</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-Related-Work"><span class="nav-number">7.</span> <span class="nav-text">6    Related Work</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-Conclusion-and-Future-Work"><span class="nav-number">8.</span> <span class="nav-text">7    Conclusion and Future Work</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name"></p>
+  <div class="site-description" itemprop="description">谦卑</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/blog/js/utils.js"></script>
+
+<script src="/blog/js/motion.js"></script>
+
+
+<script src="/blog/js/schemes/muse.js"></script>
+
+
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/blog/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+    
+
+  
+
+</body>
+</html>

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"jasonguojz.github.io","root":"/blog/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM">
+<meta property="og:url" content="https://jasonguojz.github.io/blog/2020/07/13/Biomedical%20Event%20Extraction%20Based%20on%20Knowledge-driven%20Tree-LSTM/index.html">
+<meta property="og:site_name" content="Guo Jiazhen&#39;s Blog">
+<meta property="og:description" content="Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200723111259746.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200723202324522.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200723202245300.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724102218772.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724115046407.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724141846765.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724142105412.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724142934532.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724104152082.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724145319796.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724145328270.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724145338765.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724151252001.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724151508868.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724151742589.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724151753726.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724151815746.png">
+<meta property="article:published_time" content="2020-07-12T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-08-21T08:01:07.569Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200723111259746.png">
+
+<link rel="canonical" href="https://jasonguojz.github.io/blog/2020/07/13/Biomedical%20Event%20Extraction%20Based%20on%20Knowledge-driven%20Tree-LSTM/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM | Guo Jiazhen's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Guo Jiazhen's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/13/Biomedical%20Event%20Extraction%20Based%20on%20Knowledge-driven%20Tree-LSTM/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="谦卑">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Guo Jiazhen's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-07-13 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-13T00:00:00+08:00">2020-07-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-21 16:01:07" itemprop="dateModified" datetime="2020-08-21T16:01:07+08:00">2020-08-21</time>
+              </span>
+
+          
+            <div class="post-description">Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <ol>
+<li>生物医学事件提取难点1：复杂上下文，对句子序列不做修改则 <em>trigger</em>和<em>argument</em>之间可能间隔10个words以上—对策：<strong>链式的LSTM来说很难捕捉到这种长距离的依赖关系，而在依存树结构中，它们的距离显著缩短</strong></li>
+<li>生物医学事件提取难点2：领域知识—对策：远程监督，使用<strong>外部知识库 external knowledge bases</strong></li>
+<li>做出两个修改</li>
+<li>将句子的依存关系树输入TREE-LSTM</li>
+<li>LSTM结构加入一个门控，控制远程监督信息输入到lstm unit的hidden state</li>
+<li>​    对医学生物 KB的利用，主要包括</li>
+<li>entity type—用在PubMed and PMC texts上预训练的word embedding生成词嵌入</li>
+<li>gene ontology function—用state of-the-art sentence embedding approach生成一个向量</li>
+<li>将修改过的 hidden state和外部知识embedding都输入LSTM的gate中</li>
+<li>argument role 分类，用最短路径算法找到依存树的一条最短路，把最短路输入tree-lstm，将root的hidden state和trigger、argument 的hidden state串联输入到softma算在role上分布</li>
+</ol>
+<h3 id="专有名词"><a href="#专有名词" class="headerlink" title="专有名词"></a>专有名词</h3><ol>
+<li><strong>Tree-Structured LSTM模型</strong>：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/76671510">参考1</a>、<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/46651378">参考2</a>、<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/26261371">参考3</a></li>
+<li>recursive matching criterion ——Overview of genia event taskin bionlp shared task 2011. Jin-Dong Kim</li>
+</ol>
+<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h3><p><strong>生物医学领域</strong>的<strong>事件提取 Event  extraction</strong> 比一般新闻领域的事件提取更具挑战性，因为它需要<strong>更广泛的领域特定知识 domain-specific  knowledge  的获取和对复杂上下文的更深入的理解</strong>。为了更好地<strong>编码上下文信息和外部背景知识</strong>，我们提出了一种<strong>新颖的知识库（KB）-驱动的树结构长短期记忆网络（Tree-LSTM）框架</strong> novel  <strong>knowledge  base</strong>  (KB)-<strong>driven</strong>  tree-structured  long  short-term  memory  networks(<strong>Tree-LSTM</strong>)  framework,  ，整合了两种新类型的功能：</p>
+<ol>
+<li>依赖结构 dependency structures 以捕获广泛的上下文  wide contexts ；</li>
+<li>通过实体链接 entity linking 从外部本体获得实体属性（类型和类别描述 types  and  category  descriptions ）。(远程监督)</li>
+</ol>
+<p>我们在  BioNLP shared task 和 Genia数据集 上评估了与我们的方法，并获得了最新的结果。此外，定量和定性 quantitative and qualitative 研究都证明了 Tree-LSTM 的发展以及生物医学事件提取的外部知识表示。</p>
+<h3 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1  Introduction"></a>1  Introduction</h3><p><strong>生物医学事件通常是指状态变化 change of status</strong>，尤其是蛋白质或基因状态变化。事件提取的目的是从生物医学文本中识别 triggers 及其 arguments，然后将事件类型分配给每个trigger，并将角色分配给每个参数。</p>
+<p>图1所示的句子</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200723111259746.png" alt="image-20200723111259746" style="zoom:80%;" /></p>
+<p>(这句生物方面的句子 trigger有两个type： gene expression和positive regulation，<strong><em>Tax</em></strong> 是 <strong>gene expression</strong>类型trigger 的 <strong>Theme</strong> argument，而在生物领域 gene expression既可以是trigger type也可以是positive regulation trigger type 的argument)</p>
+<p>它包含了一个<strong>基因表达 gene expression</strong> 和一个 正向调节<strong>positive regulation</strong> 事件提及，两者都由 <strong><em>transduced</em></strong> 触发。<strong><em>Tax</em></strong> 是 <strong>gene expression</strong> 的 <strong>Theme</strong> argument。一个事件也可以作为另一个事件的 argument ， 导致嵌套结构——举例：the <strong>gene expression</strong> event <strong>triggered</strong> by <strong><em>transduced</em></strong> is also a <strong>Theme argument</strong> of the <strong>positive regulation</strong> event。</p>
+<p>一个事件也可以用作另一个事件的参数，从而导致嵌套结构。例如，由转导触发的基因表达事件也是正调控事件的表象，如图1所示。</p>
+<p>早期的事件提取研究依赖于<strong>核方法</strong>，例如支持向量机（SVM），这些方法使用手工特征。最近<strong>基于分布表示 distributional   representation   based</strong> 的方法（Rao等人，2017;Bj̈orne和Salakoski，2018）探索了仅需要分布式语义特征distributed  semantic  features 的深度神经网络。但是，与<strong>一般新闻领域中的事件提取不同，生物医学事件提取需要广泛获取领域特定的知识和对复杂上下文的深刻理解</strong>——$\color{red}{[}$  <em>例如，在 BioNLP shared task 2011的 Genia 事件提取中（Kim等，2011），大约80％的实体提及是基因，蛋白质和疾病的缩写 abbreviations of genes, proteins and diseases，而<strong>超过36％的事件 triggers 和 参数 arguments 之间有10个以上的单词，距离很长。</strong></em> $\color{red}{]}$</p>
+<p>为了有效地从<strong>广泛的上下文中</strong>获取<strong>指示性信息indicative information</strong>，我们首先采用基于 <strong>Tree-LSTM 网络</strong>。<strong>依存句法树 Dependency tree structure</strong> 可以<strong>连接语义相关的概念semantically related concepts</strong>，从而显着<strong>缩短trigger 与its arguments之间的距离</strong>。例如，在下面的句子“ …，<em>which</em> <strong>binds</strong> <em>to the enhancer A located in the promoter of the mouse MHC class I gene</em> <strong>H-2Kb</strong>,，……”中，在确定 <strong>binds</strong> 的触发类型时，我们需要仔细选择其 <strong>上下文词contextual words</strong>，例如  <strong>H-2Kb</strong> ，表示 是 <strong>binds</strong>  的对象。但是，<strong>binds</strong> 和 <strong>H-2Kb</strong> 中间隔了16个words，<strong>这对链式的LSTM来说很难捕捉到这种长距离的依赖关系</strong>，而在<strong>依存树结构中，它们的距离显着缩短到7</strong>。  </p>
+<p>此外，为了更好地捕获 特定领域的知识 domain-specific knowledge，我们还建议<strong>利用 leverage 外部知识库 external knowledge bases（KBs）</strong>来<strong>获取所有生物医学实体biomedical entities的属性 properties</strong>。KB的属性对于我们的模型更明确地学习<strong>模式</strong>非常有益。以图1中的 <strong><em>Tax</em></strong> 实体为例，它是一种通常参与<strong>基因转录正调控positive regulation of transcription</strong>的生物学过程的<strong>蛋白质</strong>，<strong>根据 基因本体论referred to Gene Ontology</strong>（Ashburner等，2000）——<strong>外部知识</strong>。此功能描述为确定<strong><em>transduced</em></strong> as <strong><em>positive regulation</em></strong>提供了关键线索。  (转导和转录)</p>
+<p>因此，为了从外部知识库中获取此类知识，</p>
+<ol>
+<li>对于每个实体 entity，我们首先从其属性中学习 在 KB 层面上的 嵌入a KB concept embedding</li>
+<li>然后通过 <strong>a gate function</strong> 自动将 <strong>embedding</strong>  <strong>并入</strong> 其 <strong>Tree-LSTM</strong> 的 <strong>hidden state</strong> </li>
+</ol>
+<h3 id="2-KB-driven-Tree-LSTM-for-Event-Extraction"><a href="#2-KB-driven-Tree-LSTM-for-Event-Extraction" class="headerlink" title="2  KB-driven Tree-LSTM for Event Extraction"></a>2  KB-driven Tree-LSTM for Event Extraction</h3><h4 id="2-2-Constructing-KB-Concept-Embedding"><a href="#2-2-Constructing-KB-Concept-Embedding" class="headerlink" title="2.2  Constructing KB Concept Embedding"></a>2.2  Constructing KB Concept Embedding</h4><p>对于<strong>生物医学事件提取</strong>，我们主要将 <strong><em>Gene Ontology</em></strong> 作为外部 <strong><em>KB</em></strong>，它提供了<strong>所有物种中每个基因和基因产物属性的详细描述</strong>。它包含两种类型的信息：</p>
+<p>（1）<strong>the gene ontology（GO）</strong>定义了：</p>
+<ol>
+<li>所有基因功能 the gene functions，</li>
+<li>这些基因功能之间的关系，relations  between  these  gene  functions</li>
+<li>用于描述基因功能的概念 aspects used  to  describe  the  gene  function，包括分子功能 molecular  function, ，细胞成分 cellular  component  和生物过程 biological process.。</li>
+</ol>
+<p>（2）<strong>基因产物注释(GO  Anno)</strong>   提供所有与实体相关的属性 entity  related  attributes，比如：实体全名   full entity name； 实体类型  entity type ； 与之相关的基因功能  相关gene functions </p>
+<p> <strong><em>Gene Ontology</em></strong> 能提供的信息示例：</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200723202324522.png" alt="image-20200723202324522"    /></p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200723202245300.png" alt="image-20200723202245300" style="zoom:80%;"   /></p>
+<p><strong>为了利用 <em>Gene Ontology</em>  的信息</strong>：</p>
+<ol>
+<li>apply  <strong>QuickGO  API</strong> ：将<strong>每个 entity mention</strong> 链接到 <strong>Gene Ontology</strong> link each entity mention to the Gene Ontology 并检索所有知识库 KB 注释。对于每个实体，我们仔细选择 <strong>两种</strong> 类型的<strong>对事件提取任务有利</strong>的<strong>属性</strong>： the <strong>entity type</strong> (e.g.,<strong>protein</strong> for <strong>tax</strong>) ；<strong>the gene ontology function</strong> it is related to (e.g.,<strong><em>positive regulation of transcription</em></strong> for <strong>tax</strong>)。 <strong>实体类型 entity type 可以促进显式模式学习 argument role 的 labeling任务</strong>，例如基因表达事件模式。<strong>基因本体功能 gene ontology function</strong> 可以提供<strong>隐含的线索</strong>来确定 <strong>trigger 类型</strong></li>
+<li><strong>KB Concept Embedding： </strong>我们分配了一个<strong>词嵌入词 word  embedding</strong>，它在 <strong>PubMed 和 PMCtexts</strong> 上进行了<strong>预训练</strong>（Moen和Ananiadou，2013），以<strong>表示每种实体类型 entity  type</strong>。对于通常是一个<strong>长短语 long phrase,的每个 gene  ontology  function</strong>，我们使用 <strong>state-of-the-art 的 sentence embedding approach</strong>（Conneauet等人，2017）自动学习向量表示。然后，我们将这两种类型的 KB 属性表示形式连接起来，作为最终的 KB Concept Embedding。</li>
+</ol>
+<h4 id="2-3-Event-Trigger-Extraction"><a href="#2-3-Event-Trigger-Extraction" class="headerlink" title="2.3  Event Trigger Extraction"></a>2.3  Event Trigger Extraction</h4><p>KB concept embeddings 作为  domain-specific knowledge 放入  Tree-LSTM</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724102218772.png" alt="image-20200724102218772" style="zoom:80%;" /></p>
+<p>A 中展示了 Tree-LSTM 的一个 unit， 为了得到 input token $x_j$ 的 隐状态 hidden state $h_j$ ，这个 unit  通过深度优先遍历 计算包含了它的所有孩子节点的 hidden state $h_{i-1}, h_{i-2}$。</p>
+<p>给了上图中的句子：</p>
+<ol>
+<li><p>perform  the  <strong>dependency  parsing</strong>  with  the  <strong>Stanford  dependency parser</strong> ，obtain  a  dependency tree structure</p>
+</li>
+<li><p>对于树结构中的 节点 j ，$C(j)$ 是节点 j 的所有 子节点集合， $\mu_k$ 是节点 k 的KB concept embedding，$h_k$ 是 节点k 的 hidden state。 当 节点 k not a biomedical entity 设置 $\mu_k$ 为0，$\color{red}{\tilde\mu_j  = \sum_{k\in C(j)}\mu_k          \tilde h_j  = \sum_{k\in C(j)}h_k}$   (和向量的感觉)</p>
+</li>
+<li><p>我们将 <strong>KB concept embedding 嵌入到 Tree-LSTM 的输入，遗忘和输出门</strong>中  to select useful KB information implicitly,：</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724115046407.png" alt="image-20200724115046407" style="zoom:80%;" /></p>
+<p><em>这里嵌入，相当于是原sentense中和 node j 有依赖关系的一个子node的 embedding代表的是node j在外部资料库中的资料，相当于原文句子中加上了一个括号，括号中对这个word做了解释</em></p>
+</li>
+<li><p>此外，<strong>引入knowledge specific output gate $g_j$ 显示地将 KB concept embedding 加到每个node  的 hidden state中</strong>，与Maet al(2018)不同，他仅考虑每个节点本身的knowledge concept embedding，我们<strong>使用整个子树(推测是自身加子节点？)的knowledge concept embedding的总和来代替</strong>：</p>
+</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724141846765.png" alt="image-20200724141846765" style="zoom:80%;" /></p>
+<ol>
+<li>前面算了在隐式添加KB知识后的各种门的参数，现在得到 Cell 的 state 的值 以及 添加显式 KB 知识的 输出 $h_j$</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724142105412.png" alt="image-20200724142105412" style="zoom:80%;" /></p>
+<p>以上所有 $W$ 参数都是需要学习的:</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724142934532.png" alt="image-20200724142934532" style="zoom:80%;" /></p>
+<h4 id="2-4-Event-Argument-Role-Labeling"><a href="#2-4-Event-Argument-Role-Labeling" class="headerlink" title="2.4  Event Argument Role Labeling"></a>2.4  Event Argument Role Labeling</h4><p>在检测到所有 candidate triggers 之后，我们<strong>进一步为每个 triggers 提取 arguments</strong> 。 <strong>Genia event extraction shared task 提供了所有实体提及 entity mentions 的注释</strong>。因此，对于每个trigger，我们<strong>使用在同一句子中出现的所有<em>实体提及作为 trigger 的候选参数</em></strong>，然后<strong>分配一个  argument role or None</strong> 。与trigger提取 trigger  extraction, 不同，我们<strong>在依赖关系树结构中使用最短依赖路径shortest  dependency path（SDP）代替表面上下文 surface contexts</strong> ，以更好地捕获 trigger 和每个参数 arguments 之间的依赖关系。</p>
+<p>以下图的句子为例，给定一个 trigger : <strong><em>transcription</em></strong>和一个候选参数 argument:  <strong><em>OBF-1</em></strong></p>
+<p>我们首先执行 <strong>dependency parsing: </strong> ，<strong>用 Dijkstra 算法</strong> 得到 transcription 和 OBF-1 间的的<strong>最短依赖路径</strong>，<strong>transcription → of → gene → OBF-1</strong>。我们使用与第2.3节中介绍的相同的  <strong><em>KB-driven Tree-LSTM</em></strong> 将<strong>每个节点编码为 hidden state 表示</strong>。我们使用根节点的隐藏状态 h0 作为整个依赖路径的整体矢量表示。最后，我们<strong>将 h0 和 hidden state of the trigger and argument 的串联结果 输入 另一个 softmax 中，predict the argument role</strong>。我们也通过 最小化负对数似然损失来优化模型。</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724104152082.png" alt="image-20200724104152082"></p>
+<h3 id="3-Experiment"><a href="#3-Experiment" class="headerlink" title="3  Experiment"></a>3  Experiment</h3><h4 id="3-1-Task-Description"><a href="#3-1-Task-Description" class="headerlink" title="3.1  Task Description"></a>3.1  Task Description</h4><p><strong>The Genia Event Extraction task</strong>  是 <strong>BioNLP  Shared  Task  series</strong> 中一个主任务</p>
+<p>任务介绍：</p>
+<div class="group-picture"><div class="group-picture-container"><div class="group-picture-row"><div class="group-picture-column" style="width: 100%;"><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724145319796.png" alt="image-20200724145319796" style="zoom:80%;" /></div></div><div class="group-picture-row"><div class="group-picture-column" style="width: 50%;"><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724145328270.png" alt="image-20200724145319796" style="zoom:80%;" /></div><div class="group-picture-column" style="width: 50%;"><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724145338765.png" alt="image-20200724145319796" style="zoom:80%;" /></div></div></div></div>
+<h4 id="3-2-Experimental-Setup"><a href="#3-2-Experimental-Setup" class="headerlink" title="3.2  Experimental Setup"></a>3.2  Experimental Setup</h4><p>我们在Genia 2011数据集上应用了 KB-driven  Tree-LSTM  模型。Genia数据集中的实体是手动注释的，并作为输入的一部分给出。</p>
+<p>我们使用Genia任务组织者提供的官方在线工具 在测试集上评估结果。 根据先前的研究（Bj̈orneandSalakoski，2011; Venugopal等人，2014; Raoet等人，2017; Bj̈orne和Salakoski，2018），<strong>we report scores obtained by the approximate span</strong>（允许触发跨度 trigger spans  与黄金跨度 gold spans 有一个word 的 不同）。由于我们只关注于匹配的核心参数 arguments ，因此我们使用递归匹配标准  recursive matching criterion 评估，不需要为其他事件引用的事件匹配其他参数（Kim等，2011 Overview of genia event taskin bionlp shared task 2011.）。</p>
+<p><strong>word  embedding  pretrained  on PubMed  and  PMC  texts</strong></p>
+<h4 id="3-3-Results-and-Error-Analysis"><a href="#3-3-Results-and-Error-Analysis" class="headerlink" title="3.3  Results and Error Analysis"></a>3.3  Results and Error Analysis</h4><ul>
+<li><p>事先对比 <strong>comparison：</strong>  only using Tree-LSTM 和 a standard BiLSTM model 对比</p>
+<p>结果： Tree-LSTM  outperforms  the  BiLSTM  baseline  which indicates the power of <strong>Tree-LSTM in dealing with long-distance dependency structure</strong> <strong>in biomedical literature</strong>.  </p>
+</li>
+<li><p><strong>incorporating external KB information: </strong> 2.12% F-score gain  comparing  to  Tree-LSTM</p>
+</li>
+<li><p><strong>event  extraction</strong>  results  from  the  <strong>BioNLP  shared  task  using the  same  corpus</strong>.</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724151252001.png" alt="image-20200724151252001" style="zoom:80%;" /></p>
+</li>
+</ul>
+<p>我们注意到我们的方法在 <strong>Simple</strong> event  types 上获得了高分，但在 <strong>Binding event</strong> 和 <strong>Regulation event types</strong>上获得了相对低的分。我们分析结果后发现<strong>Binding event</strong> 有 <strong>multiple arguments</strong></p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724151508868.png" alt="image-20200724151508868"></p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724151742589.png" alt="image-20200724151742589" style="zoom:80%;" /></p>
+<div class="group-picture"><div class="group-picture-container"><div class="group-picture-row"><div class="group-picture-column" style="width: 50%;"><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724151753726.png" alt="image-20200724151753726" style="zoom:80%;" /></div><div class="group-picture-column" style="width: 50%;"><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM/image-20200724151815746.png" alt="image-20200724151815746" style="zoom:80%;" /></div></div></div></div>
+<h4 id="3-4-Effect-of-KB-concepts"><a href="#3-4-Effect-of-KB-concepts" class="headerlink" title="3.4  Effect of KB concepts"></a>3.4  Effect of KB concepts</h4><p>·</p>
+<h3 id="4-Related-Work"><a href="#4-Related-Work" class="headerlink" title="4  Related Work"></a>4  Related Work</h3><h3 id="5-Conclusions-and-Future-Work"><a href="#5-Conclusions-and-Future-Work" class="headerlink" title="5  Conclusions and Future Work"></a>5  Conclusions and Future Work</h3>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/2020/07/12/Automatically%20Labeled%20Data%20Generation%20for%20Large%20Scale%20Event%20Extraction/" rel="prev" title="Automatically Labeled Data Generation for Large Scale Event Extraction">
+      <i class="fa fa-chevron-left"></i> Automatically Labeled Data Generation for Large Scale Event Extraction
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/blog/2020/07/14/Data%20ProgrammingCreating%20Large%20Training%20Sets,%20Quickly/" rel="next" title="Data Programming:Creating Large Training Sets, Quickly——数据编程">
+      Data Programming:Creating Large Training Sets, Quickly——数据编程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%93%E6%9C%89%E5%90%8D%E8%AF%8D"><span class="nav-number">1.</span> <span class="nav-text">专有名词</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Abstract"><span class="nav-number">2.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Introduction"><span class="nav-number">3.</span> <span class="nav-text">1  Introduction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-KB-driven-Tree-LSTM-for-Event-Extraction"><span class="nav-number">4.</span> <span class="nav-text">2  KB-driven Tree-LSTM for Event Extraction</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-Constructing-KB-Concept-Embedding"><span class="nav-number">4.1.</span> <span class="nav-text">2.2  Constructing KB Concept Embedding</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-Event-Trigger-Extraction"><span class="nav-number">4.2.</span> <span class="nav-text">2.3  Event Trigger Extraction</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4-Event-Argument-Role-Labeling"><span class="nav-number">4.3.</span> <span class="nav-text">2.4  Event Argument Role Labeling</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Experiment"><span class="nav-number">5.</span> <span class="nav-text">3  Experiment</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-Task-Description"><span class="nav-number">5.1.</span> <span class="nav-text">3.1  Task Description</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-Experimental-Setup"><span class="nav-number">5.2.</span> <span class="nav-text">3.2  Experimental Setup</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-Results-and-Error-Analysis"><span class="nav-number">5.3.</span> <span class="nav-text">3.3  Results and Error Analysis</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-Effect-of-KB-concepts"><span class="nav-number">5.4.</span> <span class="nav-text">3.4  Effect of KB concepts</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Related-Work"><span class="nav-number">6.</span> <span class="nav-text">4  Related Work</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Conclusions-and-Future-Work"><span class="nav-number">7.</span> <span class="nav-text">5  Conclusions and Future Work</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name"></p>
+  <div class="site-description" itemprop="description">谦卑</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/blog/js/utils.js"></script>
+
+<script src="/blog/js/motion.js"></script>
+
+
+<script src="/blog/js/schemes/muse.js"></script>
+
+
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/blog/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+    
+
+  
+
+</body>
+</html>

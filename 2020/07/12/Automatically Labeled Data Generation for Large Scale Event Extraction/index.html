@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"jasonguojz.github.io","root":"/blog/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Automatically Labeled Data Generation for Large Scale Event Extraction">
+<meta property="og:url" content="https://jasonguojz.github.io/blog/2020/07/12/Automatically%20Labeled%20Data%20Generation%20for%20Large%20Scale%20Event%20Extraction/index.html">
+<meta property="og:site_name" content="Guo Jiazhen&#39;s Blog">
+<meta property="og:description" content="Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200813101927421.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200713204833668.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200713214520119.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714161509083.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714173434756.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714173530661.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714174457629.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714194641930.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714195554100.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714200858515.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714202823550.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714202832708.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714202846272.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714204542697.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714230406990.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714231727305.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714231750908.png">
+<meta property="article:published_time" content="2020-07-11T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-08-21T07:58:59.018Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200813101927421.png">
+
+<link rel="canonical" href="https://jasonguojz.github.io/blog/2020/07/12/Automatically%20Labeled%20Data%20Generation%20for%20Large%20Scale%20Event%20Extraction/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Automatically Labeled Data Generation for Large Scale Event Extraction | Guo Jiazhen's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Guo Jiazhen's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/12/Automatically%20Labeled%20Data%20Generation%20for%20Large%20Scale%20Event%20Extraction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="谦卑">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Guo Jiazhen's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Automatically Labeled Data Generation for Large Scale Event Extraction
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-07-12 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-12T00:00:00+08:00">2020-07-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-21 15:58:59" itemprop="dateModified" datetime="2020-08-21T15:58:59+08:00">2020-08-21</time>
+              </span>
+
+          
+            <div class="post-description">Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Automatically-Labeled-Data-Generation-for-Large-Scale-Event-Extraction——自动标记数据的生成用于大规模事件提取"><a href="#Automatically-Labeled-Data-Generation-for-Large-Scale-Event-Extraction——自动标记数据的生成用于大规模事件提取" class="headerlink" title="Automatically Labeled Data Generation for Large Scale Event Extraction——自动标记数据的生成用于大规模事件提取"></a>Automatically Labeled Data Generation for Large Scale Event Extraction——自动标记数据的生成用于大规模事件提取</h2><ol>
+<li>原本远程监督的三元组表示的是两个entity和两者间的relation，因此可以用三元组在大型语料库中提取包含这两个实体的句子，作为关系提取的训练数据。本文将远程监督用于事件提取。将argument 和 event 看作relation extraction中的两个”entity”，则可以将event extraction看作是多种或复杂multiple  or  complicated的关系数据relational  data，也就可以像DS for RE一样使用event  instance和argument来自动生成训练数据以进行argument identification(<strong>role</strong>)</li>
+<li>因为根据ACE2005，一个event instance是表示为a trigger word，所以文中也将event detction转换成 trigger detection问题</li>
+<li>做了两个关于 event instance、argument和 trigger(文中直接用verb) 的假设</li>
+<li>For example, compared with arguments like time, location and so on, spouses are key arguments in a marriage event. We call these arguments as key arguments。用<strong>Freebase</strong>来 figure out <strong>key arguments</strong> of an event使用key arguments来标记事件并找出触发词trigger words</li>
+<li>因为一个event type 的所有argument被包含在一个sentence中的情况很少，因此选出一个key argument认为句子中如果出现这个key argument则这个句子很可能在表达这个key argument代表的event type，因此可以在这个sentence中提取trigger。设计了 KR(key rate)找key argument即一个argument在这个event type 的所有instance中出现的频率乘上与其他event type不相关的程度。用 key argument 来 label sentence，在label过的sentence中找trigger，设计了TR(trigger rate)来找 trigger (类似于 TF-IDF中的思想)</li>
+<li><strong>FrameNet</strong>——被用来 noisy trigger words and expand more triggers。因为只用verb作为trigger，则像marriage这种名词trigger就不包含，因此引入 linguistic KG FrameNet。计算framebass中event type下所有words 的word embedding的均值和framnet中的frame下的LUs的word embedding，比较两个向量的相似度来作为map的依据。如果map到framenet的frame后不包含verb trigger则作为noise去掉，如果words中的nounswith high confidence inthe mapped frame to expand trigger lexicon。</li>
+<li>SDS 软远程监督：如果文档中的句子包含一个event type 的所有key argument和一个trigger，则用这个句子生成训练数据。</li>
+<li>event extraction过程：生成训练数据后，做监督训练，使用的是《Event Extraction via Dynamic Multi-Pooling Convolutional Neural Networks》中的网络模型提取词汇级和句子级的特征，两个任务：对event进行分类，以及句子中包含的word做 argument role分类</li>
+<li>因为远程监督的noise影响，为了减少错误标签的影响，使用Multi-instance Learning训练，目标函数的定义也是以instance bag</li>
+</ol>
+<h3 id="专有名词"><a href="#专有名词" class="headerlink" title="专有名词"></a>专有名词</h3><ol>
+<li><p><strong>KBP——Knowledge Base Population</strong> KBP 公开任务的研究目标，是让机器可以自动从自然书写的非结构化文本中抽取实体，以及实体之间的关系。</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200813101927421.png" alt="image-20200813101927421" style="zoom:80%;" /></p>
+</li>
+<li><p><strong>Distant Supervision远程监督（DS）</strong>：our automatically labeled data  face  a  noise  problem,  which  is  a  intrinsic problem  of  using  DS  to  construct  training  data。</p>
+</li>
+<li><p>DS for <strong>标记 Relation Extraction（RE）的training data</strong></p>
+</li>
+<li><p><strong>知识库——knowledge bases </strong>  </p>
+</li>
+<li><p>Dynamic Multi-pooling Convolutional Neural Network-s  <strong>(DMCNNs)</strong>： is the best reported CNN-based model for event extraction (Chen et al., 2015) by using human-annotated training data. </p>
+</li>
+<li><p><strong>Multi-instance Learning (MIL)</strong> 多实例学习</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/40812750">知乎参考1</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.lamda.nju.edu.cn/CH.Data.ashx?AspxAutoDetectCookieSupport=1#code">南大周志华教授 miVLAD and miFV,</a></p>
+</li>
+</ol>
+<p><strong><a target="_blank" rel="noopener" href="https://github.com/acl2017submission/event-data">Event Data</a></strong></p>
+<h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>​    用于诸如ACE之类任务的事件提取的现代模型都是基于监督学习的，该学习是从少量<strong>手工标记</strong>small hand-labeled的数据中进行的。<strong>手工标记</strong>small hand-labeled的数据————expensive，low  coverage of event types， limited in size——所以难以提取large scale of events  for <strong>KBP</strong></p>
+<p>​    因此，为了<strong>解决数据标记问题</strong>，我们提议通过使用world knowledge and linguistic knowledge语言知识 automatically label training data，which can detect key arguments and trigger words for each event type and employ  them  to  label  events  in  texts  auto matically.</p>
+<p>​    而且我们的自动标记数据可以与人工标记数据结合在一起，然后提高从这些数据中学到的模型的性能</p>
+<h3 id="1-简介"><a href="#1-简介" class="headerlink" title="1  简介"></a>1  简介</h3><ol>
+<li><p>事件提取：检测和typing events，extracting  arguments  with  different  <strong>roles</strong>(Argument  Identification)</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200713204833668.png" alt="image-20200713204833668"></p>
+</li>
+<li><p>到目前为止，大多数方法使用详尽的注释数据——manually labeling training data cost high、预定义事件类型的覆盖率低。</p>
+</li>
+<li><p>因此，对于提取大规模事件，尤其是在开放域场景open domain scenarios，如何自动高效地生成足够的训练数据是一个重要的问题。</p>
+</li>
+<li><p><strong>本文旨在自动为EE生成训练数据，其中包括labeling triggers，event types，arguments及其role(Argument  Identification)。</strong></p>
+</li>
+<li><p>事实证明，<strong>Distant Supervision远程监督（DS）</strong>的最近被证明可有效地<strong>标记 Relation Extraction（RE）的training data</strong>，<strong>Relation Extraction（RE）</strong>的目的是<strong>predict 两个命名实体的语义关系semantics relation</strong> between  pairs  of  entities。$(entity_1,relation,entity_2)$——————<strong>DS for RE假设如果两个实体在已知的知识库中有关系have  a  relationship  in a known knowledge base，则所有提及这两个实体的句子将以某种方式表达这种关系。</strong></p>
+</li>
+<li><p>当用DS for RE来做EE时，遇到以下的挑战</p>
+<p> <strong>Triggers are not given out in existing knowledge bases</strong>:EE aims to detect an event instance of a specific type and extract their arguments and roles, formulated as$ (event instance,event type;role1,argument_1;role_2,argument_2;…;role_n,argument_n)$——<strong>这可以看作是多种或复杂multiple  or  complicated的关系数据relational  data</strong>。在以an  example  of spouse of relation between Barack Obama and Michelle Obama, </p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200713214520119.png" alt="image-20200713214520119"></p>
+<p>中，<strong>DS  for  RE</strong>  uses  <strong>two  entities</strong>  to  automatically  <strong>label  training  data</strong>。像左边的图，中间的是event  instance，周围的矩形是arguments of the event instance，边指的是 the role of the argument——————看起来可以像DS for RE一样使用event  instance和argument来自动生成训练数据以进行argument identification(<strong>role</strong>)。————但是event instance是在text中隐式地提及，只是 a virtual node in existing knowledge bases————in  Freebase，前面提到的婚姻事件实例表示为$m.02nqglv$，所以不能直接拿event  instance  and  an  argumen来label  back in  sentences——————在ACE中，一个event instance是表示为a trigger word，最清楚地代表句子中事件发生的main word————受ACE启发，可以用trigger word来表示event instance，像$married$作为event instance  $people.marriage$  的trigger——但是，现有知识库 existing knowledgebases中未给出触发器</p>
+</li>
+<li><p>为了解决trigger  missing  problem，我们需要在使用distant supervision来自动标记event argument之前<strong>先去找trigger words</strong>————根据上面<strong>DS for RE</strong>的假设，</p>
+<p><strong>下面做了很多关于语言学上的假设：</strong></p>
+<p>a.   我们自然地假设<strong>a  sentence  contains all arguments of an event in the knowledge base tend to express that event, and the verbs occur in these sentences tend to evoke引发 this type of events</strong></p>
+<p>b.   However,<strong>arguments for a specific event instance are usually mentioned in multiple sentences.</strong> ——所以仅仅用知识库中所有的arguments来标注句子只能生成很少的training data——只有很少的event instances能在一个sentence中找到所有的argument<img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714161509083.png" alt="image-20200714161509083"></p>
+</li>
+<li><p>因此我们提出用<strong>world knowledge(Freebase)</strong>和<strong>linguistic knowledge (FrameNet)</strong>来自动<strong>generate labeled data</strong> for <strong>large scale EE</strong>。 </p>
+<p><strong>a.</strong>  首先，我们提出了一种使用Freebase为每个事件类型优先化参数prioritize arguments并选择key或代表参数(representative arguments)（请参阅第3.1节中的详细信息）</p>
+<p><strong>b.</strong>  其次，我们仅使用key arguments来标记事件并找出触发词trigger words</p>
+<p><strong>c.</strong>  第三，外部语言知识资源external linguistic knowledge  resource——FrameNet——被用来filter <strong>noisy trigger words</strong> and <strong>expand more triggers</strong></p>
+<p><strong>d.</strong>  之后，我们为EE提出了一个<strong>软远程监督(SDS)</strong>，以自动标记训练数据————SDS假设了<strong>Freebase</strong>中任何包含all key arguments和一个 corresponding trigger word的句子都可能以某种方式表达该事件，该句子中出现的arguments可能在该事件中play the corresponding roles </p>
+<p><strong>e.</strong>   我们通过手动和自动评估方法来评估自动标记的培训数据的质量</p>
+<p><strong>f.</strong>    we employ a <strong>CNN-based  EE  approach</strong>  with  <strong>multi-instance  learning</strong>  在自动标记的data上作为baseline</p>
+</li>
+</ol>
+<h4 id="做出的三大贡献"><a href="#做出的三大贡献" class="headerlink" title="做出的三大贡献"></a>做出的三大贡献</h4><ol>
+<li>the first work to automatically label data for large scale EE via world  knowledge  and  linguistic  knowledge</li>
+<li>用Freebase来 figure out <strong>key arguments</strong> of an event，并使用它们来自动检测events和相应的corresponding trigger words。并且用FrameNet来过滤noisy triggers并expand more triggers.</li>
+<li>大规模自动标记数据的质量有保证，可以扩充传统的人工注释数据，从而可以显着改善the extraction performance</li>
+</ol>
+<h3 id="2-背景"><a href="#2-背景" class="headerlink" title="2   背景"></a>2   背景</h3><ol>
+<li>使用Freebase作为包含event  instance的world  knowledge，以及使用FrameNet作为包含trigger information的linguistic knowledge。————Wikipedia中文章用作要标记的非结构化文本，</li>
+<li><strong>Freebase</strong>——是semantic  knowledge  base——利用复合值类型compound  value  type， CVTs，来将多个值合并为一个值——$people.marriage$  是CVT值中的一个type——这个type有很多的instance，比如 the marriage of $Barack Obama$ and $Michelle Obama$ is numbered as $m.02nqglv$ .  $Spouse,from,to and  location  of   ceremony$ 是 $people.marriage$ CVT type的<strong>roles</strong><div class="group-picture"><div class="group-picture-container"><div class="group-picture-row"><div class="group-picture-column" style="width: 50%;"><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714173434756.png" alt="" style="zoom:60%;" /></div><div class="group-picture-column" style="width: 50%;"><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714173530661.png" alt="" style="zoom:60%;" /></div></div></div></div>
+</li>
+</ol>
+<h3 id="3-Method-of-Generating-Training-Data"><a href="#3-Method-of-Generating-Training-Data" class="headerlink" title="3     Method of Generating Training Data"></a>3     Method of Generating Training Data</h3><p><strong>Architecture</strong><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714174457629.png" alt="image-20200714174457629"></p>
+<h4 id="3-1-Key-Argument-Detection"><a href="#3-1-Key-Argument-Detection" class="headerlink" title="3.1  Key Argument Detection"></a>3.1  Key Argument Detection</h4><p><strong>总结：</strong>prioritizes 每个event type 的arguments，为each type of event选择key arguments——<strong>如何通过FreeBase为每个event type找到key arguments</strong></p>
+<ol>
+<li><p><strong>point：</strong>arguments of a type of event play different roles——在区分不同类型的events时key arguments能作为线索——use <strong>Key  Rate(KR)</strong>  to estimate  the  <strong>importance  of  an argument</strong> to a type of event，由两个因素：角色显著性(Role Saliency)和事件相关性(Event Relevance)</p>
+</li>
+<li><p><strong>角色显著性(Role Saliency)</strong>: 什么是显著性Saliency：If we tend to <strong>use an argument</strong> to <strong>distinguish</strong> one <strong>event instance</strong> from other instances of a given <strong>event type</strong>, this argument will play <strong>a salient role</strong> in the given event type.</p>
+<p>定义：<img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714194641930.png" alt="image-20200714194641930"></p>
+<p>其中$RS_{ij}$是第 i 个argument对第 j 个event type的role saliency值。$Count(A_i,ET_j)$ 是$arguement_i$ 在Freebase的$eventType_j$的所有实例中出现的次数，$Count(ET_j)$是Freebase中$eventType_j$的所有实例个数</p>
+<p>(候选的argument集如何选出的？)</p>
+</li>
+<li><p><strong>事件相关性(Event Relevance)</strong>：反映一个argument 能被用来区分不同event type的能力</p>
+<p>定义：<img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714195554100.png" alt="image-20200714195554100"></p>
+<p>$Sum(ET)$是在Freebase中所有event types的个数和，$Count(ETC_i)$是所有包含第 i 个argument的event type的个数。</p>
+</li>
+<li><p><strong>Key  Rate(KR)</strong>的计算是</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714200858515.png" alt="image-20200714200858515"></p>
+</li>
+<li><p>同<strong>KR</strong>值排序，选择前K个arguments作为key arguments。</p>
+</li>
+</ol>
+<h4 id="3-2-Trigger-Word-Detection"><a href="#3-2-Trigger-Word-Detection" class="headerlink" title="3.2  Trigger Word Detection"></a>3.2  Trigger Word Detection</h4><p><strong>总结：</strong>使用key arguments来label可以初步表达事件的句子，然后detect  triggers</p>
+<ol>
+<li><p><strong>通过key  arguments对在Wikipedia中可能表达event的句子进行label。</strong></p>
+<p>使用<strong>Standford CoreNLP tool</strong>将原始的Wikipedia文本转换为句子序列并附加 NLP annotation (POS tag, NER tag)，然后我们把包含一个Freebase中event实例所有arguments的句子选择出来，这个句子我i们认为是能够表达corresponding events. 最后，我们用这些labeled句子来detect triggers</p>
+</li>
+<li><p>在句子中，一个verb更可能意味着一个event的出现(AES中，60%的event的trigger是verbs)——所以直观地说，在labeled sentences中一个verb出现的次数多于另外的verb，则这个verb更可能是trigger；但是像$is$这些verb作为trigger 的probability 要小。————这里用到$Trigger Candidate Frequency(TCF)$和$TriggerEvent Type Frequency(TETF)$</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714202823550.png" alt="image-20200714202823550"><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714202832708.png" alt="image-20200714202832708"><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714202846272.png" alt="image-20200714202846272"></p>
+<p>其中，$TR_{ij}$是第 i 个verb对第 j 个event type的trigger rate，$Count(V_i,ETS_j)$ 是表达第 j 个event type并且包含第 i 个verb的句子的个数，$Count(ETS_j)$是表达第 j 个event type的句子个数，$Count(ETI_i)$是number of event types, which have  the  labeled  sentences  containing i-th  verb————最后，我们选取有高TR值的verbs作为event type的trigger words</p>
+</li>
+</ol>
+<h4 id="3-3-Trigger-Word-Filtering-and-Expansion"><a href="#3-3-Trigger-Word-Filtering-and-Expansion" class="headerlink" title="3.3 Trigger Word Filtering and Expansion"></a>3.3 Trigger Word Filtering and Expansion</h4><p><strong>总结：</strong>使用<strong>linguistic resource——FrameNet to filter noisy verbal triggers and expand nominal triggers</strong></p>
+<p>通过上面<strong>3.2</strong>步得到初始的trigger lexicon，但是这个 lexicon is noisy 并且只包含动词的 triggers，名词 triggers是缺失的，像marriage等。——为什么不用<strong>TR值</strong>来找？，因为一个句子中名词的数量通常大于动词。</p>
+<ol>
+<li>因为<strong>word embedding </strong>成功捕捉word的语义，使用word embedding来把Freebase中的event映射到 FrameNet中——将 $i-th$ Freebase event type中的所有词的word embedding取平均记为$e_i$ ， 记 k-th lexical units of j-th frame为$e_{j,k}$，选择具有最高$similarity(e_i,e_{k,j})$ 的frame为映射的frame<img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714204542697.png" alt="image-20200714204542697"></li>
+<li>we filter the verb, which is in initial verbal trigger word lexicon and not in the mapping frame. And we use nouns with high confidence in the mapped frame to expand trigger lexicon</li>
+</ol>
+<h4 id="3-4-Automatically-labeled-data-generation"><a href="#3-4-Automatically-labeled-data-generation" class="headerlink" title="3.4  Automatically labeled data generation"></a>3.4  Automatically labeled data generation</h4><p><strong>总结：</strong>uses a <strong>SDS</strong> 来生成训练数据</p>
+<h3 id="4-Method-of-Event-Extraction"><a href="#4-Method-of-Event-Extraction" class="headerlink" title="4  Method of Event Extraction"></a>4  Method of Event Extraction</h3><p>event  extraction被分为两个阶段：第一步：<strong>Event  Classification</strong>： predict  whether  the  <strong>key  argument</strong>  candidates  participate  in  a  Freebase  event.——如果是，则进行第二步<strong>argument classification</strong>：assign arguments  to  the  event  and  identify  their  corresponding  roles为事件分配参数并确定其相应角色</p>
+<p>用<strong>Distant Supervision远程监督（DS）</strong>存在的问题：自动标注的训练数据存在噪声————为了减轻<strong>wrong label problem</strong>，采用<strong>Multi-instance Learning (MIL)</strong> </p>
+<p>用的模型是two similar Dynamic Multi-pooling Convolutional Neural Networks with Multi-instance Learning (DMCNNs-MIL)</p>
+<p>以下阐述Multi-instance Learning (MIL) 用在<strong>argument classification</strong>的方法：</p>
+<ol>
+<li><p>定义在 DM-CNNs  训练的参数$\theta$</p>
+</li>
+<li><p>假设有T bags${M_1,M_2,…,M_T}$，the $i-th$ bag包含$q_i$ 个实例instance $M_i={m_i^1,m_i^2,…,m_i^{q_i}}$</p>
+</li>
+<li><p><strong>Multi-instance Learning (MIL)</strong>的目的是predict the labels of the unseen <strong>bags</strong></p>
+</li>
+<li><p><strong>什么是bag</strong>——we take <strong>sentences</strong> containing the same <strong>argument candidate</strong> and <strong>triggers</strong> with a <strong>same event type</strong> as a bag and all <strong>sentences</strong> in a bag  are  considered  independently. 我们采用包含相同自变量候选词和具有与bag相同的事件类型的触发器的句子，并且bag中的所有实例均认为是相互独立。</p>
+</li>
+<li><p>输入实例$m_i^j$，参数$\theta$ 的网络的输出向量$O$ ，其中向量第r的元素指的是 argument role r对应的值，这里求极大似然值$p(r|m_i^j,\theta)$ ，这个值由softmax operation over all <strong>argument role types</strong></p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714230406990.png" alt="image-20200714230406990"></p>
+</li>
+<li><p><strong>区分 bags</strong>，目标函数using cross-entropy at the bag leve：</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714231727305.png" alt="image-20200714231727305"></p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Automatically Labeled Data Generation for Large Scale Event Extraction//image-20200714231750908.png" alt="image-20200714231750908"></p>
+</li>
+</ol>
+<h3 id="5-实验"><a href="#5-实验" class="headerlink" title="5    实验"></a>5    实验</h3><p>在21个选择的Freebase中的events上自动生成大量的标记数据，选择最大的5个event。</p>
+<p>通过grid search将两个超参（我们的自动数据标签中的key arguments的数量和TR的值）分别设置为2和0.8</p>
+<ol>
+<li>先手动评估自动标记的数据。</li>
+<li>基于ACE corpus对标记的数据进行自动评估</li>
+<li>展示了DMCNNs-MIL在自动标记数据上的性能。</li>
+</ol>
+<p>以及讨论了key arguments数量对结果的影响</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/2020/07/11/Open%20Domain%20Event%20Extraction%20from%20Twitter/" rel="prev" title="Open Domain Event Extraction from Twitter">
+      <i class="fa fa-chevron-left"></i> Open Domain Event Extraction from Twitter
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/blog/2020/07/13/Biomedical%20Event%20Extraction%20Based%20on%20Knowledge-driven%20Tree-LSTM/" rel="next" title="Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM">
+      Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Automatically-Labeled-Data-Generation-for-Large-Scale-Event-Extraction%E2%80%94%E2%80%94%E8%87%AA%E5%8A%A8%E6%A0%87%E8%AE%B0%E6%95%B0%E6%8D%AE%E7%9A%84%E7%94%9F%E6%88%90%E7%94%A8%E4%BA%8E%E5%A4%A7%E8%A7%84%E6%A8%A1%E4%BA%8B%E4%BB%B6%E6%8F%90%E5%8F%96"><span class="nav-number">1.</span> <span class="nav-text">Automatically Labeled Data Generation for Large Scale Event Extraction——自动标记数据的生成用于大规模事件提取</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%93%E6%9C%89%E5%90%8D%E8%AF%8D"><span class="nav-number">1.1.</span> <span class="nav-text">专有名词</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.2.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%AE%80%E4%BB%8B"><span class="nav-number">1.3.</span> <span class="nav-text">1  简介</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%81%9A%E5%87%BA%E7%9A%84%E4%B8%89%E5%A4%A7%E8%B4%A1%E7%8C%AE"><span class="nav-number">1.3.1.</span> <span class="nav-text">做出的三大贡献</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%83%8C%E6%99%AF"><span class="nav-number">1.4.</span> <span class="nav-text">2   背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Method-of-Generating-Training-Data"><span class="nav-number">1.5.</span> <span class="nav-text">3     Method of Generating Training Data</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-Key-Argument-Detection"><span class="nav-number">1.5.1.</span> <span class="nav-text">3.1  Key Argument Detection</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-Trigger-Word-Detection"><span class="nav-number">1.5.2.</span> <span class="nav-text">3.2  Trigger Word Detection</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-Trigger-Word-Filtering-and-Expansion"><span class="nav-number">1.5.3.</span> <span class="nav-text">3.3 Trigger Word Filtering and Expansion</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-Automatically-labeled-data-generation"><span class="nav-number">1.5.4.</span> <span class="nav-text">3.4  Automatically labeled data generation</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Method-of-Event-Extraction"><span class="nav-number">1.6.</span> <span class="nav-text">4  Method of Event Extraction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.7.</span> <span class="nav-text">5    实验</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name"></p>
+  <div class="site-description" itemprop="description">谦卑</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/blog/js/utils.js"></script>
+
+<script src="/blog/js/motion.js"></script>
+
+
+<script src="/blog/js/schemes/muse.js"></script>
+
+
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/blog/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+    
+
+  
+
+</body>
+</html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
 <meta name="generator" content="Hexo 5.0.2">
@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"jasonguojz.github.io","root":"/blog/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"jasonguojz.github.io","root":"/blog/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="谦卑">
@@ -71,12 +71,12 @@
   .use-motion .logo-line-before i { left: initial; }
   .use-motion .logo-line-after i { right: initial; }
   </style>
-</noscript>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
-  <div class="container use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
     <div class="headband"></div>
 
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -100,6 +100,7 @@
 
   <div class="site-nav-right">
     <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
 </div>
@@ -119,11 +120,38 @@
     <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
 
   </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
   </ul>
 </nav>
 
 
 
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
 
 </div>
     </header>
@@ -149,7 +177,7 @@
   <div class="post-block">
     <div class="posts-collapse">
       <div class="collection-title">
-        <span class="collection-header">Um..! 1 post. Keep on posting.</span>
+        <span class="collection-header">Um..! 21 posts in total. Keep on posting.</span>
       </div>
 
       
@@ -162,15 +190,195 @@
 
       <div class="post-meta">
         <time itemprop="dateCreated"
-              datetime="2020-08-20T23:35:18+08:00"
-              content="2020-08-20">
-          08-20
+              datetime="2020-08-21T10:16:42+08:00"
+              content="2020-08-21">
+          08-21
         </time>
       </div>
 
       <div class="post-title">
-          <a class="post-title-link" href="/blog/2020/08/20/hello-world/" itemprop="url">
-            <span itemprop="name">Hello World</span>
+          <a class="post-title-link" href="/blog/2020/08/21/404/" itemprop="url">
+            <span itemprop="name">Page Not Found</span>
+          </a>
+      </div>
+
+    </header>
+  </article>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2020-08-01T00:00:00+08:00"
+              content="2020-08-01">
+          08-01
+        </time>
+      </div>
+
+      <div class="post-title">
+          <a class="post-title-link" href="/blog/2020/08/01/Neural%20Aspect%20and%20Opinion%20Term%20Extraction%20with%20Mined%20Rules%20as%20Weak%20Supervision/" itemprop="url">
+            <span itemprop="name">Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision</span>
+          </a>
+      </div>
+
+    </header>
+  </article>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2020-07-30T00:00:00+08:00"
+              content="2020-07-30">
+          07-30
+        </time>
+      </div>
+
+      <div class="post-title">
+          <a class="post-title-link" href="/blog/2020/07/30/The%20Neuro-Symbolic%20Concept%20Learner%20Interpreting%20Scenes%20Words%20and%20Sentences%20From%20Natural%20Supervision/" itemprop="url">
+            <span itemprop="name">The Neuro-Symbolic Concept Learner Interpreting Scenes Words and Sentences From Natural Supervision</span>
+          </a>
+      </div>
+
+    </header>
+  </article>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2020-07-29T00:00:00+08:00"
+              content="2020-07-29">
+          07-29
+        </time>
+      </div>
+
+      <div class="post-title">
+          <a class="post-title-link" href="/blog/2020/07/29/Snorkel%20rapid%20training%20data%20creation%20with%20weak%20supervision/" itemprop="url">
+            <span itemprop="name">Snorkel-- rapid training data creation with weak supervision</span>
+          </a>
+      </div>
+
+    </header>
+  </article>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2020-07-28T00:00:00+08:00"
+              content="2020-07-28">
+          07-28
+        </time>
+      </div>
+
+      <div class="post-title">
+          <a class="post-title-link" href="/blog/2020/07/28/Liberal%20Event%20Extraction%20and%20Event%20Schema%20Induction/" itemprop="url">
+            <span itemprop="name">Liberal Event Extraction and Event Schema Induction</span>
+          </a>
+      </div>
+
+    </header>
+  </article>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2020-07-27T00:00:00+08:00"
+              content="2020-07-27">
+          07-27
+        </time>
+      </div>
+
+      <div class="post-title">
+          <a class="post-title-link" href="/blog/2020/07/27/Learning%20the%20Structure%20of%20Generative%20Models%20without%20Labeled%20Data/" itemprop="url">
+            <span itemprop="name">Learning the Structure of Generative Models without Labeled Data</span>
+          </a>
+      </div>
+
+    </header>
+  </article>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2020-07-25T00:00:00+08:00"
+              content="2020-07-25">
+          07-25
+        </time>
+      </div>
+
+      <div class="post-title">
+          <a class="post-title-link" href="/blog/2020/07/25/Neural%20Module%20Networks/" itemprop="url">
+            <span itemprop="name">Neural Module Networks</span>
+          </a>
+      </div>
+
+    </header>
+  </article>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2020-07-24T00:00:00+08:00"
+              content="2020-07-24">
+          07-24
+        </time>
+      </div>
+
+      <div class="post-title">
+          <a class="post-title-link" href="/blog/2020/07/24/What%20Uncertainties%20Do%20We%20Need%20in%20Bayesian%20DeepLearning%20for%20Computer%20Vision/" itemprop="url">
+            <span itemprop="name">What Uncertainties Do We Need in Bayesian DeepLearning for Computer Vision?</span>
+          </a>
+      </div>
+
+    </header>
+  </article>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2020-07-23T00:00:00+08:00"
+              content="2020-07-23">
+          07-23
+        </time>
+      </div>
+
+      <div class="post-title">
+          <a class="post-title-link" href="/blog/2020/07/23/Aleatory%20or%20epistemic%20Does%20it%20matter/" itemprop="url">
+            <span itemprop="name">Aleatory or epistemic? Does it matter?</span>
+          </a>
+      </div>
+
+    </header>
+  </article>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2020-07-22T00:00:00+08:00"
+              content="2020-07-22">
+          07-22
+        </time>
+      </div>
+
+      <div class="post-title">
+          <a class="post-title-link" href="/blog/2020/07/22/On%20Calibration%20of%20Modern%20Neural%20Networks/" itemprop="url">
+            <span itemprop="name">On Calibration of Modern Neural Networks</span>
           </a>
       </div>
 
@@ -185,6 +393,9 @@
   
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/blog/archives/page/2/">2</a><a class="page-number" href="/blog/archives/page/3/">3</a><a class="extend next" rel="next" href="/blog/archives/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+  </nav>
 
 
 
@@ -249,7 +460,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">1</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -322,6 +533,8 @@
 
 
 
+  
+<script src="/blog/js/local-search.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
 
 
@@ -332,6 +545,10 @@
 
 
 
+
+
+
+  
 
   
 

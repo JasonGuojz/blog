@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"jasonguojz.github.io","root":"/blog/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Open Domain Event Extraction from Twitter">
+<meta property="og:url" content="https://jasonguojz.github.io/blog/2020/07/11/Open%20Domain%20Event%20Extraction%20from%20Twitter/index.html">
+<meta property="og:site_name" content="Guo Jiazhen&#39;s Blog">
+<meta property="og:description" content="Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200705193641839.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200705205639212.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200308135214464-1596944096144.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200809113907373.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200809152426429.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200809152646060.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200809154338160.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200809165055337.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200809165151047.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200809165207521.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200705172439009.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200705210901858.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200308154402927.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200308154656117.png">
+<meta property="article:published_time" content="2020-07-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-08-21T15:56:59.268Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200705193641839.png">
+
+<link rel="canonical" href="https://jasonguojz.github.io/blog/2020/07/11/Open%20Domain%20Event%20Extraction%20from%20Twitter/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Open Domain Event Extraction from Twitter | Guo Jiazhen's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Guo Jiazhen's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/11/Open%20Domain%20Event%20Extraction%20from%20Twitter/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="谦卑">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Guo Jiazhen's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Open Domain Event Extraction from Twitter
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-07-11 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-11T00:00:00+08:00">2020-07-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-21 23:56:59" itemprop="dateModified" datetime="2020-08-21T23:56:59+08:00">2020-08-21</time>
+              </span>
+
+          
+            <div class="post-description">Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <ol>
+<li>Open Domain</li>
+<li>根据<strong>[Named entity recognition in tweets: An experimental study.]</strong>中的模型 twitter文本有较多OOV(用Brown Cluster对lexical variations产生的OOV进行聚类来解决OOV)，manually annotated tweets as in-domain data 用于train POS system(特殊的词性标注集)，CRF(包含Brown Cluster的feature函数以及以及POS dictionary，spelling and contextual feature)，来完成POS tag任务。 named entity segmentation和classification任务的具体细节见文章</li>
+<li>event phrase extraction——即EE任务中的对event mention的提取，用 linear chain CRF model作为序列标注任务的模型，识别trigger(这里的CRF用到的特征函数包括 contextual, dictionary, and orthographic features, and also include features based on our Twitter-tuned POS tagger [Named entity recognition in tweets: An experimental study], and dictionaries of event terms gathered from WordNet by Sauri et al.[Evita: a robust event recognizer for QA systems.])</li>
+<li>temporal expression提取，即event argument ——TempEx</li>
+<li>event type classification——因为推文open domain性质：首先，目前还不清楚哪些类别适合Twitter(?)。其次，使用事件类型标记tweet需要大量的手工工作。第三，重要类别(和实体)的集合很可能会随着时间的推移而改变，或者在特定的用户群体中改变。最后，许多重要的类别是相对少见的，所以即使一个大的带注释的数据集可能只包含这些类别的几个例子，使分类困难。——无监督方法，生成模型，使用主题模型中的LDA方法，该模型推断出一组适当的事件类型来匹配我们的数据，并通过利用大量的未标记数据将事件分类为不同的类型。</li>
+<li>推断——LDA方法的inference，gibbs sampling</li>
+</ol>
+<h3 id="code"><a href="#code" class="headerlink" title="code"></a>code</h3><p><a target="_blank" rel="noopener" href="https://github.com/aritter/twitter_nlp">https://github.com/aritter/twitter_nlp</a></p>
+<h3 id="专有名词"><a href="#专有名词" class="headerlink" title="专有名词"></a>专有名词</h3><ol>
+<li>recent work on NLP in noisy text</li>
+<li>latent variable models</li>
+<li>POS tagged pos标记</li>
+<li>NLP tool 命名实体分割器和旨在处理经编辑文本（例如新闻文章）的部分语音标记器</li>
+<li>TEMPORAL EXPRESSIONS 解决时间表达式</li>
+<li>Event indicator phrase </li>
+<li><p>LinkLDA </p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200705193641839.png" alt="image-20200705193641839" style="zoom:80%;" /></p>
+<p>提及事件短语的类型分布的信息可以在提及的内容中共享，而歧义性也可以自然保留。该方法基于生成的概率模型，对数据执行许多不同的概率查询很简单。例如，在对Ag-Aggregate事件进行分类时，这很有用。</p>
+</li>
+<li><p>为了进行推断(inference)，我们使用折叠(collapsed)的Gibbs采样: 其中依次对每个隐藏变量进行采样，并对参数进行积分。</p>
+</li>
+<li>折叠(collapsed)的Gibbs采样(sampling)</li>
+<li>流方法(a streaming approach)进行推理以预测</li>
+<li>Gibbs markov链</li>
+<li>symmetric Dirichlet distribution对称狄利克雷分布</li>
+<li>Bayesian Inference techniques 贝叶斯推理技术</li>
+<li>流推论技术 streaming inference techniques</li>
+<li><p>$G^2$ log likelihood ratio statistic，对于text分析比卡方更有效<br>Fisher’s Exact test   ——— produce P values 但对于大数据量，计算Fisher’s Exact test statistic困难。。。。在我们的环境中，G2测试足够好用，因为计算实体和日期之间的关联比使用成对的实体（或单词）时产生的稀疏列联表(sparse contingency table)要少。</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200705205639212.png" alt="image-20200705205639212" style="zoom:80%;" /></p>
+</li>
+<li>Locally Sensitive Hash Functions </li>
+</ol>
+<h3 id="challenge："><a href="#challenge：" class="headerlink" title="challenge："></a>challenge：</h3><ol>
+<li>大多数tweets是琐事</li>
+<li>没有足够信息将其归类到一个category的event</li>
+<li>tweets的格式不是正式的书写方式，传统的NLP不适合</li>
+</ol>
+<h3 id="Opportunities"><a href="#Opportunities" class="headerlink" title="Opportunities:"></a>Opportunities:</h3><ol>
+<li>NLP in noisy text</li>
+<li>找到事件的总体表示，为<strong>事件分类</strong>提供额外的上下文</li>
+<li><strong>识别那些和唯一时间相关的重要事件，而不是在一段时间内均匀发生的</strong></li>
+<li>如何找到重要事件的集合</li>
+<li>监督和半监督需要manually annotate。提出一种自动找type，然后filter和annotate with label的方法，用找到的类别对extracted event进行分类。</li>
+<li>主要的优点是使用了大量无标签的数据</li>
+</ol>
+<h3 id="Representation"><a href="#Representation" class="headerlink" title="Representation"></a>Representation</h3><p>extracts a 4-tuple representation of events which includes <strong>a named entity, event phrase, unambiguous calendar date, and event type</strong> </p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200308135214464-1596944096144.png" alt="image-20200308135214464"></p>
+<p>选择这种表达方式是为了与Twitter中重要事件的典型表达方式紧密匹配，目的是找到Twitter中重要event并以这种格式记录。</p>
+<h3 id="Model-框图"><a href="#Model-框图" class="headerlink" title="Model 框图"></a>Model 框图</h3><p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200809113907373.png" alt="image-20200809113907373"></p>
+<p>open domain下做 命名实体提取NER、事件提取EE和时间表达式解析Temporal Resolution。对提取的Event进行分类，根据significance进行排序。</p>
+<p>分类依据：</p>
+<p>significance排序依据:  根据每个date中出现的次数决定the strengthen association between each named entity and date</p>
+<h3 id="NLP-tool"><a href="#NLP-tool" class="headerlink" title="NLP tool"></a>NLP tool</h3><ol>
+<li>named entity segmenters </li>
+<li>PoS tagger</li>
+</ol>
+<p>因为推文的形式不规范，没有可靠的特征描述，所以 ENR tool 是在 <strong>in-domain Twitter data</strong>重新训练的</p>
+<h3 id="EXTRACTING-EVENT-MENTIONS"><a href="#EXTRACTING-EVENT-MENTIONS" class="headerlink" title="EXTRACTING EVENT MENTIONS"></a>EXTRACTING EVENT MENTIONS</h3><ol>
+<li><p>手动 annotate a corpus of tweets 用于 train <strong>sequence models</strong> to extract event</p>
+</li>
+<li><p>对推文用现成的 PoS tagger (chain CRF, which is beneficial for extracting multi-word event phrase)打上PoS tag</p>
+</li>
+<li><p>Event phrases can consist of many different 词性(event mentions?) </p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200809152426429.png" alt="image-20200809152426429"></p>
+</li>
+<li><p>手动注释的细节：</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200809152646060.png" alt="image-20200809152646060"></p>
+</li>
+<li><p>CRF方法，定义feature function的细节：</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200809154338160.png" alt="image-20200809154338160"></p>
+</li>
+</ol>
+<h3 id="EXTRACTING-AND-RESOLVING-TEM-PORAL-EXPRESSIONS"><a href="#EXTRACTING-AND-RESOLVING-TEM-PORAL-EXPRESSIONS" class="headerlink" title="EXTRACTING AND RESOLVING TEM-PORAL EXPRESSIONS"></a>EXTRACTING AND RESOLVING TEM-PORAL EXPRESSIONS</h3><p>时间表达的抽取和解析</p>
+<p>use <strong>TempEx</strong></p>
+<p>直接用在推文中出现的描述date 的text上准确率也很高——直接使用的TempEx，pipelined system</p>
+<p> input a reference date, some text, and parts of speech (from our Twitter-trained POS tagger) and marks temporal expressions with unambiguous calendar references.(<strong>designed for use on newswire text, future work adapting temporal extraction to Twitter</strong> )</p>
+<h3 id="CLASSIFICATION-OF-EVENT-TYPES"><a href="#CLASSIFICATION-OF-EVENT-TYPES" class="headerlink" title="CLASSIFICATION OF EVENT TYPES"></a>CLASSIFICATION OF EVENT TYPES</h3><p>将事件类型 event type 作为 latent variables $z$ ，推断一组适当的事件类型以匹配我们的数据，并通过利用大量未标记的数据将事件分类为各种类型  (用的是 LinkLDA ，主题模型中的一种，主题为隐变量，为文档预测主题 )</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200809165055337.png" alt="image-20200809165055337" style="zoom:80%;" /></p>
+<p>unsupervised approaches that will automatically induce event types which match the data.</p>
+<p>Each type corresponds to a distribution over named entities n involved in specific instances of the type, in addition to a distribution over dates d on which events of the type occur. </p>
+<p>每个type有一个该类型特定实例的命名实体的分布，和该类型事件发生的日期 的 分布。</p>
+<h3 id="Inference"><a href="#Inference" class="headerlink" title="Inference"></a>Inference</h3><p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200809165151047.png" alt="image-20200809165151047" style="zoom:80%;" /></p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200809165207521.png" alt="image-20200809165207521"></p>
+<p><strong>pipelined system</strong></p>
+<h3 id="Algorithm"><a href="#Algorithm" class="headerlink" title="Algorithm"></a>Algorithm</h3><h4 id="算法细节："><a href="#算法细节：" class="headerlink" title="算法细节："></a>算法细节：</h4><ol>
+<li><p>这些推文经过POS标记，然后提取命名的实体和事件短语，解析时间表达式，并将提取的事件分类。最后，我们根据它们共同出现的推文的数量来测量每个命名实体与日期之间的关联强度，以便确定事件是否重要。</p>
+</li>
+<li><p>NLP tool：我们利用named entity segmenters 和PoS tagger， ENR tool是根据先前工作[46]中介绍的域内Twitter数据进行训练的。我们还针对域内带注释的数据开发了一个事件标记器</p>
+</li>
+<li><p>我们使用命名实体tagger对先前工作中提出的域内Twitter数据进行了培训[46] .3对tweet进行培训可以大大提高对命名实体进行分段的性能。 域内训练的重要性</p>
+</li>
+<li><p>event phrase提供了重要的上下文信息，提供的信息也有助于categorizing event into types</p>
+</li>
+<li><p>我们使用条件随机场（conditional random filed)进行学习learning 和推理inference，将事件触发的识别问题视为序列标记任务sequence labeling task[24</p>
+</li>
+<li><p>线性链CRF(linear chain CRF)对相邻单词(adjacent words)的预测标签(predicted label)之间的相关性(dependencies)进行建模，这有助于提取多单词事件短语(extract multi-word event phrase)</p>
+</li>
+<li><p>我们使用上下文(contextual)，字典(dictionary)和正字法(orthographic)特征，还包括基于Twitter调整的POS标记器[46]的功能，以及Sauri等人[50]从WordNet收集的事件项的词典。</p>
+</li>
+<li><p>除了提取事件和相关的命名实体之外，我们还需要在事件发生时进行提取。</p>
+</li>
+<li><p>解决时间表达式：resolve temporal expression。 使用TempEx——输入参考日期，一些文本和词性（来自我们的Twitter训练的POS标记器），并使用明确的日历参考标记时间表达。 a reference date, some text, and parts of speech(from our Twitter-trained POS tagger)TempEx在推文上的高精度可以用以下事实来解释，即某些时间表达相对明确 TempEx’s high precisionon Tweets can be explained by the fact that some temporal expressions are relatively unambiguous.尽管通过处理嘈杂的时间表达似乎有改善Twitter上时间提取（例如，“明天”一词的50多个拼写变化列表，请参见Ritter等人[46]），但我们保留了适应时间的提取到Twitter作为潜在的未来工作（for example see Ritter et. al. [46] for a list of over50 spelling variations on the word “tomorrow”）</p>
+</li>
+<li><p>为了将提取的事件分类为不同的类型，我们提出了一种基于潜在变量模型(atent variable models )的方法，该方法可以推断出适当的事件类型集以匹配我们的数据，并通过利用大量未标记的数据将事件分类为各种类型。 模型的来由 by recent work on modeling selectional preferences [47, 39, 22, 52, 48], and unsupervised information extraction [4, 55, 7].</p>
+</li>
+<li><p><strong>Supervised or semi-supervised classification of event categories存在一些问题：</strong></p>
+<p><strong>a. priori unclear不清楚哪个类别适用于Twitter。</strong></p>
+<p><strong>b. 用事件类型注释推文需要大量的人工。</strong></p>
+<p><strong>c. 重要的类别（和实体）可能会随着时间的推移而变化，或者随着关注的用户人群而变化。 important categories (and entities) is likely to shift over time</strong></p>
+<p><strong>d. 即使是大型带注释的数据集也可能仅包含这些重要类别的少量示例making classification difficult.</strong></p>
+</li>
+<li><p>事件指示器短语event indicator phrase ，都被建模为类型的混合a mixture of types<img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200705172439009.png" alt="image-20200705172439009" style="zoom:67%;display:inline" align="middle" />每种type对应于该种type的特定实例中涉及到的命名实例的分布</p>
+</li>
+<li><p>在我们的模型中包括日历日期，具有鼓励在同一日期发生的事件被分配为相同类型的作用。有助于指导推理，因为对同一事件的不同引用也应具有相同的类型.</p>
+</li>
+<li><p>为了估计给定事件在类型上的分布，在充分 burn in(扔掉前几个迭代) 后从Gibbs markov链中获取相应的隐藏变量的样本。使用流方法(a streaming approach)进行推理以预测新数据</p>
+</li>
+<li>用于注释自动发现的事件类型的完整标签列表以及每种类型的覆盖范围。请注意，将标签分配给类型仅需要完成一次，并为任意数量的事件实例生成标签。</li>
+</ol>
+<h4 id="评价"><a href="#评价" class="headerlink" title="评价"></a>评价</h4><ol>
+<li><p>为了评估模型对重大事件进行分类的能力，收集， we gathered 65 million extracted events of the form 。We then ran <strong>Gibbs Sampling</strong> with 100 types for 1,000 iterations of burn-in, keeping the hidden variable assignments found in the last sample.</p>
+</li>
+<li><p>可以使用流推论技术轻松地使用相同的类型集对新事件实例进行分类[efficient methods for <strong>topic model inference</strong> on streaming document collections.]。未来工作的一个有趣方向是自动标记和对自动发现的事件类型进行一致性评估，类似于主题模型的最新工作[38，25]。</p>
+</li>
+<li><p>为了评估模型对<strong>汇总事件</strong>进行分类的能力(classify aggregate events,).我们将出现20倍或20倍以上数据的所有（实体，日期）对组合在一起，然后使用模型发现的<strong>事件类型</strong>对<strong>关联性最高的500</strong>（请参阅第7节）进行注释</p>
+</li>
+<li><p>为了帮助证明利用大量未标记数据进行事件分类的好处.compare against a supervised <strong>Maximum Entropy baseline</strong> 最大熵模型基线  which makes use of the 500 annotated events using 10-fold crossv alidation</p>
+</li>
+<li><p>For features, we treat the set of event phrases that co-occur with each (entity, date) pair as a <strong>bag-of-words</strong>, and also include the associated entity. Because many event categories are infrequent, there are often few or no training examples for a category, leading to low performance</p>
+</li>
+<li><p>仅使用频率来确定哪些事件是重大事件是不够的，因为许多推文都涉及用户日常生活中的常见事件。为了从Twitter提取一般兴趣的重大事件，我们需要某种方法来<strong>衡量实体与日期之间的关联强度</strong>。</p>
+</li>
+<li><p>然后，我们将提取的三元组添加到第6节中所述的用于推断事件类型的数据集中，并对Gibbs采样执行了50次迭代，以预测新数据上的事件类型，同时使原始数据中的隐藏变量保持不变。。使用的是 streaming inference</p>
+</li>
+<li><p>按照第7节中的描述对提取的事件进行排名，并从排名最高的100,500和1,000中随机抽取50个事件。我们用4个单独的标准注释了事件。</p>
+</li>
+<li><p>注释事件 annotate the event</p>
+<p>标准：</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200705210901858.png" alt="image-20200705210901858" style="zoom:80%;" /></p>
+</li>
+</ol>
+<h3 id="Ranking-Event"><a href="#Ranking-Event" class="headerlink" title="Ranking Event"></a>Ranking Event</h3><p>重要的事件可以被区分为那些与一个独特的日期有强烈关联的事件，而不是在日历中均匀地分布。为了从Twitter中提取一般意义上的重要事件，我们需要某种方法来衡量一个实体和一个日期之间的关联强度。</p>
+<p>To <strong>extract significant events of general interests</strong> from Twitter, we thus need some way to <strong>measure the strength of association between an entity and a date.</strong></p>
+<p>用 G 检验 (异常值检验)</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200308154402927.png" alt="image-20200308154402927"></p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200308154656117.png" alt="image-20200308154656117"></p>
+<h4 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h4><ol>
+<li>我们从每个100M的文本中提取了<strong>事件短语</strong>和时态表达式之外的命名实体。提取包括event phrases、temporal expressions 和named entities </li>
+<li>predictions (“entity + date + event + type”)</li>
+</ol>
+<h4 id="相关工作"><a href="#相关工作" class="headerlink" title="相关工作"></a>相关工作</h4><ol>
+<li>研究有两个与之相关的关键环节：从Twitter提取特定类型的事件，以及从新闻中提取开放域事件。</li>
+</ol>
+<p>推文具有高度重复性，因此我们有动力集中精力提取事件的总体表示形式，从而为诸如事件分类之类的任务提供额外的上下文，并通过利用信息的重复性来过滤掉平凡的事件</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/2020/07/10/A%20Short%20Introduction%20to%20Probabilistic%20Soft%20Logic/" rel="prev" title="A Short Introduction to Probabilistic Soft Logic 阅读笔记">
+      <i class="fa fa-chevron-left"></i> A Short Introduction to Probabilistic Soft Logic 阅读笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/blog/2020/07/12/Automatically%20Labeled%20Data%20Generation%20for%20Large%20Scale%20Event%20Extraction/" rel="next" title="Automatically Labeled Data Generation for Large Scale Event Extraction">
+      Automatically Labeled Data Generation for Large Scale Event Extraction <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#code"><span class="nav-number">1.</span> <span class="nav-text">code</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%93%E6%9C%89%E5%90%8D%E8%AF%8D"><span class="nav-number">2.</span> <span class="nav-text">专有名词</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#challenge%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">challenge：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Opportunities"><span class="nav-number">4.</span> <span class="nav-text">Opportunities:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Representation"><span class="nav-number">5.</span> <span class="nav-text">Representation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Model-%E6%A1%86%E5%9B%BE"><span class="nav-number">6.</span> <span class="nav-text">Model 框图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NLP-tool"><span class="nav-number">7.</span> <span class="nav-text">NLP tool</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EXTRACTING-EVENT-MENTIONS"><span class="nav-number">8.</span> <span class="nav-text">EXTRACTING EVENT MENTIONS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EXTRACTING-AND-RESOLVING-TEM-PORAL-EXPRESSIONS"><span class="nav-number">9.</span> <span class="nav-text">EXTRACTING AND RESOLVING TEM-PORAL EXPRESSIONS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CLASSIFICATION-OF-EVENT-TYPES"><span class="nav-number">10.</span> <span class="nav-text">CLASSIFICATION OF EVENT TYPES</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Inference"><span class="nav-number">11.</span> <span class="nav-text">Inference</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Algorithm"><span class="nav-number">12.</span> <span class="nav-text">Algorithm</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E7%BB%86%E8%8A%82%EF%BC%9A"><span class="nav-number">12.1.</span> <span class="nav-text">算法细节：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%84%E4%BB%B7"><span class="nav-number">12.2.</span> <span class="nav-text">评价</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ranking-Event"><span class="nav-number">13.</span> <span class="nav-text">Ranking Event</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C"><span class="nav-number">13.1.</span> <span class="nav-text">实验</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">13.2.</span> <span class="nav-text">相关工作</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name"></p>
+  <div class="site-description" itemprop="description">谦卑</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/blog/js/utils.js"></script>
+
+<script src="/blog/js/motion.js"></script>
+
+
+<script src="/blog/js/schemes/muse.js"></script>
+
+
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/blog/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+    
+
+  
+
+</body>
+</html>
