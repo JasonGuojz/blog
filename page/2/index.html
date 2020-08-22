@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"jasonguojz.github.io","root":"/blog/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"jasonguojz.github.io","root":"/blog/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="谦卑">
@@ -115,9 +115,19 @@
     <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
 
   </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blog/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags<span class="badge">77</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/blog/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories<span class="badge">28</span></a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">21</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -174,7 +184,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/22/On%20Calibration%20of%20Modern%20Neural%20Networks/">
+    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/20/Neural%20Aspect%20and%20Opinion%20Term%20Extraction%20with%20Mined%20Rules%20as%20Weak%20Supervision/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/blog/images/avatar.gif">
@@ -188,7 +198,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/blog/2020/07/22/On%20Calibration%20of%20Modern%20Neural%20Networks/" class="post-title-link" itemprop="url">On Calibration of Modern Neural Networks</a>
+            <a href="/blog/2020/07/20/Neural%20Aspect%20and%20Opinion%20Term%20Extraction%20with%20Mined%20Rules%20as%20Weak%20Supervision/" class="post-title-link" itemprop="url">Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision</a>
         </h2>
 
         <div class="post-meta">
@@ -198,17 +208,69 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-07-22 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-22T00:00:00+08:00">2020-07-22</time>
+              <time title="Created: 2020-07-20 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-20T00:00:00+08:00">2020-07-20</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-21 23:57:13" itemprop="dateModified" datetime="2020-08-21T23:57:13+08:00">2020-08-21</time>
+                <time title="Modified: 2020-08-22 17:06:19" itemprop="dateModified" datetime="2020-08-22T17:06:19+08:00">2020-08-22</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Distant-Supervision/" itemprop="url" rel="index"><span itemprop="name">Distant Supervision</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Neural-Networks-with-Logic-Rules/" itemprop="url" rel="index"><span itemprop="name">Neural Networks with Logic Rules</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Sentiment-Analysis/" itemprop="url" rel="index"><span itemprop="name">Sentiment Analysis</span></a>
+                </span>
+            </span>
 
           
+            <span id="/blog/2020/07/20/Neural%20Aspect%20and%20Opinion%20Term%20Extraction%20with%20Mined%20Rules%20as%20Weak%20Supervision/" class="post-meta-item leancloud_visitors" data-flag-title="Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/blog/2020/07/20/Neural%20Aspect%20and%20Opinion%20Term%20Extraction%20with%20Mined%20Rules%20as%20Weak%20Supervision/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/blog/2020/07/20/Neural%20Aspect%20and%20Opinion%20Term%20Extraction%20with%20Mined%20Rules%20as%20Weak%20Supervision/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>10 mins.</span>
+            </span>
 
         </div>
       </header>
@@ -219,10 +281,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.</p>
+          <p><div align=center>提出了一种基于BiLSTM-CRF（双向LSTM条件随机场）的神经模型，用于aspect and opinion term extraction，训练数据使用人类注释数据作为基本事实ground truth 监督和用mined规则注释的数据作为弱监督进行训练，类似半监督，但是这个方法在利用未标记的数据时引入了学习到的领域知识，所以和远程监督利用外部KB也有关。</div></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/blog/2020/07/22/On%20Calibration%20of%20Modern%20Neural%20Networks/">
+              <a class="btn" href="/blog/2020/07/20/Neural%20Aspect%20and%20Opinion%20Term%20Extraction%20with%20Mined%20Rules%20as%20Weak%20Supervision/">
                 Read more &raquo;
               </a>
             </div>
@@ -246,7 +308,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/19/Learning%20Named%20Entity%20Tagger%20using%20Domain-Specific%20Dictionary/">
+    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/19/Biomedical%20Event%20Extraction%20Based%20on%20Knowledge-driven%20Tree-LSTM/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/blog/images/avatar.gif">
@@ -260,7 +322,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/blog/2020/07/19/Learning%20Named%20Entity%20Tagger%20using%20Domain-Specific%20Dictionary/" class="post-title-link" itemprop="url">Learning Named Entity Tagger using Domain-Specific Dictionary——AutoNER</a>
+            <a href="/blog/2020/07/19/Biomedical%20Event%20Extraction%20Based%20on%20Knowledge-driven%20Tree-LSTM/" class="post-title-link" itemprop="url">Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM</a>
         </h2>
 
         <div class="post-meta">
@@ -277,10 +339,62 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-21 16:56:39" itemprop="dateModified" datetime="2020-08-21T16:56:39+08:00">2020-08-21</time>
+                <time title="Modified: 2020-08-22 17:08:20" itemprop="dateModified" datetime="2020-08-22T17:08:20+08:00">2020-08-22</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Distant-Supervision/" itemprop="url" rel="index"><span itemprop="name">Distant Supervision</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Event-Extraction/" itemprop="url" rel="index"><span itemprop="name">Event Extraction</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Biomedical/" itemprop="url" rel="index"><span itemprop="name">Biomedical</span></a>
+                </span>
+            </span>
 
           
+            <span id="/blog/2020/07/19/Biomedical%20Event%20Extraction%20Based%20on%20Knowledge-driven%20Tree-LSTM/" class="post-meta-item leancloud_visitors" data-flag-title="Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/blog/2020/07/19/Biomedical%20Event%20Extraction%20Based%20on%20Knowledge-driven%20Tree-LSTM/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/blog/2020/07/19/Biomedical%20Event%20Extraction%20Based%20on%20Knowledge-driven%20Tree-LSTM/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>7k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>6 mins.</span>
+            </span>
 
         </div>
       </header>
@@ -291,10 +405,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.</p>
+          <p><div align=center> 将句子的依存树输入tree-lstm解决医学报告中trigger和argument长距离的问题，将外部KB知识embedding后输与句子的vector和word embedding一同输入lstm</div></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/blog/2020/07/19/Learning%20Named%20Entity%20Tagger%20using%20Domain-Specific%20Dictionary/">
+              <a class="btn" href="/blog/2020/07/19/Biomedical%20Event%20Extraction%20Based%20on%20Knowledge-driven%20Tree-LSTM/">
                 Read more &raquo;
               </a>
             </div>
@@ -318,7 +432,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/18/Harnessing%20Deep%20Neural%20Networks%20with%20Logic%20Rules/">
+    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/18/Learning%20Named%20Entity%20Tagger%20using%20Domain-Specific%20Dictionary/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/blog/images/avatar.gif">
@@ -332,7 +446,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/blog/2020/07/18/Harnessing%20Deep%20Neural%20Networks%20with%20Logic%20Rules/" class="post-title-link" itemprop="url">Harnessing Deep Neural Networks with Logic Rules</a>
+            <a href="/blog/2020/07/18/Learning%20Named%20Entity%20Tagger%20using%20Domain-Specific%20Dictionary/" class="post-title-link" itemprop="url">Learning Named Entity Tagger using Domain-Specific Dictionary——AutoNER</a>
         </h2>
 
         <div class="post-meta">
@@ -349,10 +463,54 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-21 16:50:05" itemprop="dateModified" datetime="2020-08-21T16:50:05+08:00">2020-08-21</time>
+                <time title="Modified: 2020-08-22 17:06:49" itemprop="dateModified" datetime="2020-08-22T17:06:49+08:00">2020-08-22</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Training-Data-Generation/" itemprop="url" rel="index"><span itemprop="name">Training Data Generation</span></a>
+                </span>
+            </span>
 
           
+            <span id="/blog/2020/07/18/Learning%20Named%20Entity%20Tagger%20using%20Domain-Specific%20Dictionary/" class="post-meta-item leancloud_visitors" data-flag-title="Learning Named Entity Tagger using Domain-Specific Dictionary——AutoNER" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/blog/2020/07/18/Learning%20Named%20Entity%20Tagger%20using%20Domain-Specific%20Dictionary/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/blog/2020/07/18/Learning%20Named%20Entity%20Tagger%20using%20Domain-Specific%20Dictionary/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>10 mins.</span>
+            </span>
 
         </div>
       </header>
@@ -363,10 +521,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.</p>
+          <p><div align=center>为解决标注数据不足问题，通常可以找相似领域的有标记数据做领域迁移、用领域词典做远程监督生成标记数据——本文讨论如何使用领域词表来生成标注数据。提出了一种 Tie or Break 的标注方案</div></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/blog/2020/07/18/Harnessing%20Deep%20Neural%20Networks%20with%20Logic%20Rules/">
+              <a class="btn" href="/blog/2020/07/18/Learning%20Named%20Entity%20Tagger%20using%20Domain-Specific%20Dictionary/">
                 Read more &raquo;
               </a>
             </div>
@@ -390,7 +548,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/17/Event%20Detection%20with%20Neural%20Networks%20A%20Rigorous%20Empirical%20Evaluation/">
+    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/17/Learning%20the%20Structure%20of%20Generative%20Models%20without%20Labeled%20Data/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/blog/images/avatar.gif">
@@ -404,7 +562,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/blog/2020/07/17/Event%20Detection%20with%20Neural%20Networks%20A%20Rigorous%20Empirical%20Evaluation/" class="post-title-link" itemprop="url">Event Detection with Neural Networks-- A Rigorous Empirical Evaluation</a>
+            <a href="/blog/2020/07/17/Learning%20the%20Structure%20of%20Generative%20Models%20without%20Labeled%20Data/" class="post-title-link" itemprop="url">Learning the Structure of Generative Models without Labeled Data</a>
         </h2>
 
         <div class="post-meta">
@@ -421,10 +579,58 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-21 16:35:29" itemprop="dateModified" datetime="2020-08-21T16:35:29+08:00">2020-08-21</time>
+                <time title="Modified: 2020-08-22 17:11:27" itemprop="dateModified" datetime="2020-08-22T17:11:27+08:00">2020-08-22</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Training-Data-Generation/" itemprop="url" rel="index"><span itemprop="name">Training Data Generation</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Generative-Models/" itemprop="url" rel="index"><span itemprop="name">Generative Models</span></a>
+                </span>
+            </span>
 
           
+            <span id="/blog/2020/07/17/Learning%20the%20Structure%20of%20Generative%20Models%20without%20Labeled%20Data/" class="post-meta-item leancloud_visitors" data-flag-title="Learning the Structure of Generative Models without Labeled Data" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/blog/2020/07/17/Learning%20the%20Structure%20of%20Generative%20Models%20without%20Labeled%20Data/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/blog/2020/07/17/Learning%20the%20Structure%20of%20Generative%20Models%20without%20Labeled%20Data/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>9.3k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>8 mins.</span>
+            </span>
 
         </div>
       </header>
@@ -435,10 +641,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.</p>
+          <p><div align=center> Snorkel related papers 3——优化目标改进，引入稀疏正则，用SGD因此截断梯度法</div></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/blog/2020/07/17/Event%20Detection%20with%20Neural%20Networks%20A%20Rigorous%20Empirical%20Evaluation/">
+              <a class="btn" href="/blog/2020/07/17/Learning%20the%20Structure%20of%20Generative%20Models%20without%20Labeled%20Data/">
                 Read more &raquo;
               </a>
             </div>
@@ -462,7 +668,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/16/Event%20Detection%20and%20Co-reference%20with%20Minimal%20Supervision/">
+    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/16/Data%20ProgrammingCreating%20Large%20Training%20Sets,%20Quickly/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/blog/images/avatar.gif">
@@ -476,7 +682,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/blog/2020/07/16/Event%20Detection%20and%20Co-reference%20with%20Minimal%20Supervision/" class="post-title-link" itemprop="url">Event detection and co-reference with minimal supervision</a>
+            <a href="/blog/2020/07/16/Data%20ProgrammingCreating%20Large%20Training%20Sets,%20Quickly/" class="post-title-link" itemprop="url">Data Programming:Creating Large Training Sets, Quickly</a>
         </h2>
 
         <div class="post-meta">
@@ -493,10 +699,74 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-21 16:30:25" itemprop="dateModified" datetime="2020-08-21T16:30:25+08:00">2020-08-21</time>
+                <time title="Modified: 2020-08-22 17:08:04" itemprop="dateModified" datetime="2020-08-22T17:08:04+08:00">2020-08-22</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Training-Data-Generation/" itemprop="url" rel="index"><span itemprop="name">Training Data Generation</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Snorkel/" itemprop="url" rel="index"><span itemprop="name">Snorkel</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Data-Programming/" itemprop="url" rel="index"><span itemprop="name">Data Programming</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/PGM/" itemprop="url" rel="index"><span itemprop="name">PGM</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Factor-Graph/" itemprop="url" rel="index"><span itemprop="name">Factor Graph</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/MC/" itemprop="url" rel="index"><span itemprop="name">MC</span></a>
+                </span>
+            </span>
 
           
+            <span id="/blog/2020/07/16/Data%20ProgrammingCreating%20Large%20Training%20Sets,%20Quickly/" class="post-meta-item leancloud_visitors" data-flag-title="Data Programming:Creating Large Training Sets, Quickly" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/blog/2020/07/16/Data%20ProgrammingCreating%20Large%20Training%20Sets,%20Quickly/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/blog/2020/07/16/Data%20ProgrammingCreating%20Large%20Training%20Sets,%20Quickly/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>8.6k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>8 mins.</span>
+            </span>
 
         </div>
       </header>
@@ -507,10 +777,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.</p>
+          <p><div align=center> Snorkel related papers 1</div></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/blog/2020/07/16/Event%20Detection%20and%20Co-reference%20with%20Minimal%20Supervision/">
+              <a class="btn" href="/blog/2020/07/16/Data%20ProgrammingCreating%20Large%20Training%20Sets,%20Quickly/">
                 Read more &raquo;
               </a>
             </div>
@@ -534,7 +804,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/15/DL2%20TRAINING%20AND%20QUERYING%20NEURAL%20NETWORKS%20WITH%20LOGIC/">
+    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/16/Snorkel%20rapid%20training%20data%20creation%20with%20weak%20supervision/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/blog/images/avatar.gif">
@@ -548,7 +818,127 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/blog/2020/07/15/DL2%20TRAINING%20AND%20QUERYING%20NEURAL%20NETWORKS%20WITH%20LOGIC/" class="post-title-link" itemprop="url">DL2- TRAINING AND QUERYING NEURAL NETWORKS WITH LOGIC</a>
+            <a href="/blog/2020/07/16/Snorkel%20rapid%20training%20data%20creation%20with%20weak%20supervision/" class="post-title-link" itemprop="url">Snorkel-- rapid training data creation with weak supervision</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-07-16 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-16T00:00:00+08:00">2020-07-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-22 17:05:33" itemprop="dateModified" datetime="2020-08-22T17:05:33+08:00">2020-08-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Training-Data-Generation/" itemprop="url" rel="index"><span itemprop="name">Training Data Generation</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Snorkel/" itemprop="url" rel="index"><span itemprop="name">Snorkel</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/blog/2020/07/16/Snorkel%20rapid%20training%20data%20creation%20with%20weak%20supervision/" class="post-meta-item leancloud_visitors" data-flag-title="Snorkel-- rapid training data creation with weak supervision" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/blog/2020/07/16/Snorkel%20rapid%20training%20data%20creation%20with%20weak%20supervision/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/blog/2020/07/16/Snorkel%20rapid%20training%20data%20creation%20with%20weak%20supervision/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>13k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>12 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><div align=center>Snorkel related papers 2——侧重工程实现及演示</div></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/blog/2020/07/16/Snorkel%20rapid%20training%20data%20creation%20with%20weak%20supervision/">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/15/Automatically%20Labeled%20Data%20Generation%20for%20Large%20Scale%20Event%20Extraction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="谦卑">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Guo Jiazhen's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/2020/07/15/Automatically%20Labeled%20Data%20Generation%20for%20Large%20Scale%20Event%20Extraction/" class="post-title-link" itemprop="url">Automatically Labeled Data Generation for Large Scale Event Extraction</a>
         </h2>
 
         <div class="post-meta">
@@ -565,10 +955,62 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-21 16:19:44" itemprop="dateModified" datetime="2020-08-21T16:19:44+08:00">2020-08-21</time>
+                <time title="Modified: 2020-08-22 17:08:37" itemprop="dateModified" datetime="2020-08-22T17:08:37+08:00">2020-08-22</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Training-Data-Generation/" itemprop="url" rel="index"><span itemprop="name">Training Data Generation</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Distant-Supervision/" itemprop="url" rel="index"><span itemprop="name">Distant Supervision</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Event-Extraction/" itemprop="url" rel="index"><span itemprop="name">Event Extraction</span></a>
+                </span>
+            </span>
 
           
+            <span id="/blog/2020/07/15/Automatically%20Labeled%20Data%20Generation%20for%20Large%20Scale%20Event%20Extraction/" class="post-meta-item leancloud_visitors" data-flag-title="Automatically Labeled Data Generation for Large Scale Event Extraction" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/blog/2020/07/15/Automatically%20Labeled%20Data%20Generation%20for%20Large%20Scale%20Event%20Extraction/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/blog/2020/07/15/Automatically%20Labeled%20Data%20Generation%20for%20Large%20Scale%20Event%20Extraction/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>9.5k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>9 mins.</span>
+            </span>
 
         </div>
       </header>
@@ -579,10 +1021,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.</p>
+          <p><div align=center>从freebase三元组作为knowledge base进行关系提取的远程监督受到启发迁移到event extraction上，设计了key argument的提取，用于找到trigge和rargument role来确定event type</div></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/blog/2020/07/15/DL2%20TRAINING%20AND%20QUERYING%20NEURAL%20NETWORKS%20WITH%20LOGIC/">
+              <a class="btn" href="/blog/2020/07/15/Automatically%20Labeled%20Data%20Generation%20for%20Large%20Scale%20Event%20Extraction/">
                 Read more &raquo;
               </a>
             </div>
@@ -606,7 +1048,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/14/Data%20ProgrammingCreating%20Large%20Training%20Sets,%20Quickly/">
+    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/14/Event%20Detection%20with%20Neural%20Networks%20A%20Rigorous%20Empirical%20Evaluation/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/blog/images/avatar.gif">
@@ -620,7 +1062,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/blog/2020/07/14/Data%20ProgrammingCreating%20Large%20Training%20Sets,%20Quickly/" class="post-title-link" itemprop="url">Data Programming:Creating Large Training Sets, Quickly——数据编程</a>
+            <a href="/blog/2020/07/14/Event%20Detection%20with%20Neural%20Networks%20A%20Rigorous%20Empirical%20Evaluation/" class="post-title-link" itemprop="url">Event Detection with Neural Networks-- A Rigorous Empirical Evaluation</a>
         </h2>
 
         <div class="post-meta">
@@ -637,10 +1079,58 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-21 16:02:30" itemprop="dateModified" datetime="2020-08-21T16:02:30+08:00">2020-08-21</time>
+                <time title="Modified: 2020-08-22 17:07:13" itemprop="dateModified" datetime="2020-08-22T17:07:13+08:00">2020-08-22</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Event-Extraction/" itemprop="url" rel="index"><span itemprop="name">Event Extraction</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/JRNN-related-model/" itemprop="url" rel="index"><span itemprop="name">JRNN related model</span></a>
+                </span>
+            </span>
 
           
+            <span id="/blog/2020/07/14/Event%20Detection%20with%20Neural%20Networks%20A%20Rigorous%20Empirical%20Evaluation/" class="post-meta-item leancloud_visitors" data-flag-title="Event Detection with Neural Networks-- A Rigorous Empirical Evaluation" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/blog/2020/07/14/Event%20Detection%20with%20Neural%20Networks%20A%20Rigorous%20Empirical%20Evaluation/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/blog/2020/07/14/Event%20Detection%20with%20Neural%20Networks%20A%20Rigorous%20Empirical%20Evaluation/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>4.7k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>4 mins.</span>
+            </span>
 
         </div>
       </header>
@@ -651,10 +1141,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.</p>
+          <p><div align=center>借助DAG-GRU建模语法信息syntactic  information，并对系统性能对模型初始化的敏感性进行了实证研究/div></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/blog/2020/07/14/Data%20ProgrammingCreating%20Large%20Training%20Sets,%20Quickly/">
+              <a class="btn" href="/blog/2020/07/14/Event%20Detection%20with%20Neural%20Networks%20A%20Rigorous%20Empirical%20Evaluation/">
                 Read more &raquo;
               </a>
             </div>
@@ -678,7 +1168,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/13/Biomedical%20Event%20Extraction%20Based%20on%20Knowledge-driven%20Tree-LSTM/">
+    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/13/Liberal%20Event%20Extraction%20and%20Event%20Schema%20Induction/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/blog/images/avatar.gif">
@@ -692,7 +1182,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/blog/2020/07/13/Biomedical%20Event%20Extraction%20Based%20on%20Knowledge-driven%20Tree-LSTM/" class="post-title-link" itemprop="url">Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM</a>
+            <a href="/blog/2020/07/13/Liberal%20Event%20Extraction%20and%20Event%20Schema%20Induction/" class="post-title-link" itemprop="url">Liberal Event Extraction and Event Schema Induction</a>
         </h2>
 
         <div class="post-meta">
@@ -709,10 +1199,54 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-21 16:01:07" itemprop="dateModified" datetime="2020-08-21T16:01:07+08:00">2020-08-21</time>
+                <time title="Modified: 2020-08-22 17:06:31" itemprop="dateModified" datetime="2020-08-22T17:06:31+08:00">2020-08-22</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Event-Extraction/" itemprop="url" rel="index"><span itemprop="name">Event Extraction</span></a>
+                </span>
+            </span>
 
           
+            <span id="/blog/2020/07/13/Liberal%20Event%20Extraction%20and%20Event%20Schema%20Induction/" class="post-meta-item leancloud_visitors" data-flag-title="Liberal Event Extraction and Event Schema Induction" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/blog/2020/07/13/Liberal%20Event%20Extraction%20and%20Event%20Schema%20Induction/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/blog/2020/07/13/Liberal%20Event%20Extraction%20and%20Event%20Schema%20Induction/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>5.4k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>5 mins.</span>
+            </span>
 
         </div>
       </header>
@@ -723,10 +1257,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.</p>
+          <p><div align=center>trigger type自动生成，非分类方式，扩展type集，以distribution hypothesis 为依据，提出两个假设，以这两个假设为依据，将 event trigger 的上下文中包含的 argument和argument对应的role和type 作为给 trigger 进行聚类的依据(通过聚类给trigger生成type，聚的新类就产生新的trigger type，超越ACE这些固有schema和预定义的type)</div></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/blog/2020/07/13/Biomedical%20Event%20Extraction%20Based%20on%20Knowledge-driven%20Tree-LSTM/">
+              <a class="btn" href="/blog/2020/07/13/Liberal%20Event%20Extraction%20and%20Event%20Schema%20Induction/">
                 Read more &raquo;
               </a>
             </div>
@@ -750,7 +1284,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/12/Automatically%20Labeled%20Data%20Generation%20for%20Large%20Scale%20Event%20Extraction/">
+    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/12/Event%20Detection%20and%20Co-reference%20with%20Minimal%20Supervision/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/blog/images/avatar.gif">
@@ -764,7 +1298,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/blog/2020/07/12/Automatically%20Labeled%20Data%20Generation%20for%20Large%20Scale%20Event%20Extraction/" class="post-title-link" itemprop="url">Automatically Labeled Data Generation for Large Scale Event Extraction</a>
+            <a href="/blog/2020/07/12/Event%20Detection%20and%20Co-reference%20with%20Minimal%20Supervision/" class="post-title-link" itemprop="url">Event detection and co-reference with minimal supervision</a>
         </h2>
 
         <div class="post-meta">
@@ -781,82 +1315,54 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-21 15:58:59" itemprop="dateModified" datetime="2020-08-21T15:58:59+08:00">2020-08-21</time>
+                <time title="Modified: 2020-08-22 17:07:21" itemprop="dateModified" datetime="2020-08-22T17:07:21+08:00">2020-08-22</time>
               </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/blog/2020/07/12/Automatically%20Labeled%20Data%20Generation%20for%20Large%20Scale%20Event%20Extraction/">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/11/Open%20Domain%20Event%20Extraction%20from%20Twitter/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="谦卑">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Guo Jiazhen's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/2020/07/11/Open%20Domain%20Event%20Extraction%20from%20Twitter/" class="post-title-link" itemprop="url">Open Domain Event Extraction from Twitter</a>
-        </h2>
-
-        <div class="post-meta">
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
+                <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-07-11 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-11T00:00:00+08:00">2020-07-11</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Event-Extraction/" itemprop="url" rel="index"><span itemprop="name">Event Extraction</span></a>
                 </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-21 23:56:59" itemprop="dateModified" datetime="2020-08-21T23:56:59+08:00">2020-08-21</time>
-              </span>
+            </span>
 
           
+            <span id="/blog/2020/07/12/Event%20Detection%20and%20Co-reference%20with%20Minimal%20Supervision/" class="post-meta-item leancloud_visitors" data-flag-title="Event detection and co-reference with minimal supervision" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/blog/2020/07/12/Event%20Detection%20and%20Co-reference%20with%20Minimal%20Supervision/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/blog/2020/07/12/Event%20Detection%20and%20Co-reference%20with%20Minimal%20Supervision/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>10k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>9 mins.</span>
+            </span>
 
         </div>
       </header>
@@ -867,10 +1373,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.</p>
+          <p><div align=center> event type通过实例自动生成，非分类方式，扩展event type集， 解决共指问题</div></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/blog/2020/07/11/Open%20Domain%20Event%20Extraction%20from%20Twitter/">
+              <a class="btn" href="/blog/2020/07/12/Event%20Detection%20and%20Co-reference%20with%20Minimal%20Supervision/">
                 Read more &raquo;
               </a>
             </div>
@@ -963,8 +1469,31 @@
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/blog/categories/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blog/tags/">
+          
+        <span class="site-state-item-count">77</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
   </nav>
 </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JasonGuojz" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JasonGuojz" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/blog/jzguovulcan@gmail.com" title="E-Mail → jzguovulcan@gmail.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="skype:yourname?call|chat" title="Skype → skype:yourname?call|chat" rel="noopener" target="_blank"><i class="fa fa-fw fa-skype"></i>Skype</a>
+      </span>
+  </div>
 
 
 
@@ -992,6 +1521,16 @@
     <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder"></span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="Symbols count total">191k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">2:54</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
   </div>
@@ -1102,11 +1641,40 @@
     MathJax.texReset();
     MathJax.typeset();
   }
-</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</script>
 
     
 
   
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : '2M2aiiBff85KzN3JvTFsCV2J-9Nh9j0Va',
+      appKey     : '7n1fFOWyaLnTBNpNjRhYsF0W',
+      placeholder: "Please write your comments here",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
 </body>
 </html>

@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"jasonguojz.github.io","root":"/blog/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="从 Bayesian 角度，解释了 why dropout works，以及如何对dropout神经网络的不确定性进行建模，可以将dropout training in deep network 看作是 deep Gaussian processes">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning">
+<meta property="og:url" content="https://jasonguojz.github.io/blog/2020/07/29/Dropout%20as%20a%20Bayesian%20Approximation%20Representing%20Model%20Uncertainty%20in%20Deep%20Learning/index.html">
+<meta property="og:site_name" content="Guo Jiazhen&#39;s Blog">
+<meta property="og:description" content="从 Bayesian 角度，解释了 why dropout works，以及如何对dropout神经网络的不确定性进行建模，可以将dropout training in deep network 看作是 deep Gaussian processes">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200806232800050.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807111630605.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807152741325.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807155235695.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807114931629.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807144618946.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807163946175.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807152600466.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807160424278.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807160603257.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807160755395.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807160900121.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807165529067.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807165714931.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807170037550.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807170124788.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807170131131.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807170803587.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807170842588.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807171402274.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807172120631.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807223933825.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807234027807.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807235518120.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807235518120.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807235911802.png">
+<meta property="article:published_time" content="2020-07-28T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-08-22T09:07:34.417Z">
+<meta property="article:tag" content="MC dropout">
+<meta property="article:tag" content="bi-model">
+<meta property="article:tag" content="deep Gaussian processes">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200806232800050.png">
+
+<link rel="canonical" href="https://jasonguojz.github.io/blog/2020/07/29/Dropout%20as%20a%20Bayesian%20Approximation%20Representing%20Model%20Uncertainty%20in%20Deep%20Learning/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning | Guo Jiazhen's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Guo Jiazhen's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blog/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags<span class="badge">77</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/blog/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories<span class="badge">28</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">21</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/29/Dropout%20as%20a%20Bayesian%20Approximation%20Representing%20Model%20Uncertainty%20in%20Deep%20Learning/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="谦卑">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Guo Jiazhen's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-07-29 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-29T00:00:00+08:00">2020-07-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-22 17:07:34" itemprop="dateModified" datetime="2020-08-22T17:07:34+08:00">2020-08-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Uncertainty-in-deep-learning/" itemprop="url" rel="index"><span itemprop="name">Uncertainty in deep learning</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Dropout-Uncertainty/" itemprop="url" rel="index"><span itemprop="name">Dropout Uncertainty</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Gaussian-Processes/" itemprop="url" rel="index"><span itemprop="name">Gaussian Processes</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/blog/2020/07/29/Dropout%20as%20a%20Bayesian%20Approximation%20Representing%20Model%20Uncertainty%20in%20Deep%20Learning/" class="post-meta-item leancloud_visitors" data-flag-title="Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/blog/2020/07/29/Dropout%20as%20a%20Bayesian%20Approximation%20Representing%20Model%20Uncertainty%20in%20Deep%20Learning/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/blog/2020/07/29/Dropout%20as%20a%20Bayesian%20Approximation%20Representing%20Model%20Uncertainty%20in%20Deep%20Learning/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>7.6k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>7 mins.</span>
+            </span>
+            <div class="post-description"><div align=center> 从 Bayesian 角度，解释了 why dropout works，以及如何对dropout神经网络的不确定性进行建模，可以将dropout training in deep network 看作是 deep Gaussian processes</div></div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <a id="more"></a>
+<h3 id="『Dropout-as-a-Bayesian-Approximation-Representing-Model-Uncertainty-in-Deep-Learning』阅读笔记"><a href="#『Dropout-as-a-Bayesian-Approximation-Representing-Model-Uncertainty-in-Deep-Learning』阅读笔记" class="headerlink" title="『Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning』阅读笔记"></a>『Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning』阅读笔记</h3><p><a target="_blank" rel="noopener" href="http://www.cs.ox.ac.uk/people/yarin.gal/website/blog_3d801aa532c1ce.html#uncertainty-sense">作者博客</a></p>
+<p><a target="_blank" rel="noopener" href="https://oatml.cs.ox.ac.uk/publications.html">后续工作——Inter-domain Deep Gaussian Processes with RKHS Fourier Features</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/82108924">reference——黄伟zhihu blog</a></p>
+<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h3><p><strong>从 Bayesian 角度，解释了 why dropout works</strong>，以及如何对dropout神经网络的不确定性进行建模 。</p>
+<p>深度学习工具的回归和分类不能捕捉模型的不确定性。在比较中，贝叶斯模型提供了一个数学基础框架来解释模型的不确定性，但计算成本高。</p>
+<p>本文提出了一种新的理论框架，将深度神经网络中的dropout training  as  approximate Bayesian inference in deep Gaussian processes。这一理论的一个直接结果是使用dropout NNs 从现有的模型中提取不确定性。这在不牺牲计算复杂度或测试精度的情况下，减轻了representing uncertainty in deep-learning的问题。我们对dropout uncertainty的性质进行了深入的研究。以MNIST为例，在回归和分类任务上评估了各种网络结构和非线性。我们显示了一个相当大的改进在预测对数似然和RMSE相比前先进的方法，并完成我们的dropout uncertainty在深度强化学习的应用</p>
+<h3 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h3><p>softmax输出不能表示为不确定性，普通模型优化目标得到的是参数的点估计，However, passing the distribution (shaded area 1a) through a softmax (shaded area 1b) better reflects classification uncertainty far from the training data：下图中对训练集外的数据给出预测为class 1，且给出很高的probabiliity值</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200806232800050.png" alt="image-20200806232800050"></p>
+<p>有了<strong>模型置信度</strong>，我们可以显式地处理不确定输入和特殊情况。例如，在分类的情况下，模型可能返回一个具有高不确定性的结果。不确定性在强化学习(RL)中也很重要。有了不确定性信息，agent就可以决定何时利用和何时探索其环境。</p>
+<p>贝叶斯概率论为我们提供了基于数学的工具来推断模型的不确定性，但通常伴随着高昂的计算成本。也许令人惊讶的是，在不改变模型或优化的情况下，将最近的深度学习工具转换为贝叶斯模型是可能的。我们表明，在<strong>神经网络中使用dropout(and its variants)可以解释为高斯过程(GP)的概率模型。</strong>在深度学习的许多模型中，Dropout作为一种避免过度拟合的方法被使用，我们的解释表明dropout approximately <strong>integrates</strong> over the models’ weights。我们开发了一些工具来表示现有dropout神经网络的不确定性。</p>
+<p>本文<strong>对高斯过程和dropout之间的关系进行了完整的论证，</strong>并开发了表示深度学习中不确定性的必要工具。我们在回归和分类的任务上，对dropout神经网络和卷积神经网路得到的不确定性的性质进行了广泛的探索性评估。本文以MNIST为例，比较了<strong>不同模型体系结构和非线性回归得到的不确定性</strong>，表明<strong>模型不确定性是分类任务不可缺少的</strong>。然后，与SOTA相比，我们在<strong>预测对数似然和RMSE方面显示了相当大的改进</strong>。最后，我们针对类似于深度强化学习的实际任务，<strong>对强化学习设置中的模型不确定性进行了定量评估</strong>。</p>
+<h3 id="2-Related-Research"><a href="#2-Related-Research" class="headerlink" title="2. Related Research"></a>2. Related Research</h3><p> <strong>infinitely  wide  (single  hid-den layer) NNs with distributions placed over their weights converge  to  Gaussian  processes  (Neal,  1995;  Williams,1997).</strong>  因为带有 limit极限运算，所以一般研究  finite NNs s with distributions placed over their weights 一般称为 <strong>Bayesian neural networks</strong>，也为过拟合提供了鲁棒性，但<strong>challenging  inference</strong>  and  additional  <strong>computational costs.</strong></p>
+<p> 最近的变分推理 <strong>sampling-based variational inference</strong> and <strong>stochastic variational inference</strong> ，这些已经被用来获得贝叶斯神经网络的新近似，表现得和dropout一样好t (Blundell et al.,2015). 然而，这些模型的计算成本高得令人望而却步。为了表示不确定性，对于相同的网络规模，这些模型中的参数数量增加了一倍。此外，它们需要更多的时间来收敛，也没有改进现有的技术。考虑到良好的非确定性估计可以从常见的dropout模型中廉价获得，这可能会导致不必要的额外计算。变分推断的另一种方法利用了 <strong>expectation  propagation</strong>  (Hern ́andez-Lobato  &amp;  Adams,  2015)  ，在RMSE评价和对 VI  approaches的不确定性估计上有很可观的改进。</p>
+<h3 id="3-Dropout-as-a-Bayesian-Approximation"><a href="#3-Dropout-as-a-Bayesian-Approximation" class="headerlink" title="3. Dropout as a Bayesian Approximation"></a>3. Dropout as a Bayesian Approximation</h3><p>我们证明了具有任意深度和非线性的神经网络，在每个权重层之前都应用了dropout，在数学上等价于概率深度高斯过程  probabilistic  deep  Gaussian  process的近似(Damianou &amp;Lawrence, 2013)(在其协方差函数参数上的边际分布)。我们想强调的是，在文献中没有对dropout的使用进行简化，并且所推导出的结果适用于任何在实际应用中使用dropout的网络体系结构。此外，我们的结果也与dropout的其他变体相关联(比如drop-connect)，(Wan et al., 2013), multiplicative Gaussian noise (Srivas-tava et al., 2014), etc.). </p>
+<p>结果表明，<strong>dropout，实际上，最小化了一个近似分布和一个deep Gaussian process的后验之间的 KL散度</strong> (marginalised over its finite rank covariance function协方差函数 parameters)。</p>
+<ul>
+<li><h5 id="common-dropout-NN-non-probabilistic-NN"><a href="#common-dropout-NN-non-probabilistic-NN" class="headerlink" title="common dropout NN( non-probabilistic NN)"></a>common dropout NN( non-probabilistic NN)</h5><p>常见的最小化目标公式：</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807111630605.png" alt="image-20200807111630605"></p>
+<p>使用dropout，我们为每个输入点和每个层中的每个网络单元(除了最后一个)采样伯努利分布变量(为隐层创建一个mask，对每个隐变量为伯努利分布)。</p>
+</li>
+<li><h5 id="deep-Gaussian-process"><a href="#deep-Gaussian-process" class="headerlink" title="deep Gaussian process"></a>deep Gaussian process</h5><p>用于为新输入预测的公式</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807152741325.png" alt="image-20200807152741325"></p>
+<p>对于第二项 后验概率，采用变分近似 </p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807155235695.png" alt="image-20200807155235695"></p>
+<p>损失函数 第一项为普通 dropout NN的的最大似然估计损失，第二项为让替代的分布更接近</p>
+</li>
+</ul>
+<p>  应用到高斯过程中：</p>
+<p>  参数方法需要推断参数的分布，而在非参数方法中，比如高斯过程，它可以直接推断函数的分布,allows us to model distributions over functions.  假设我们有一个协方差函数(核函数)：</p>
+<p>  <img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807114931629.png" alt="image-20200807114931629"></p>
+<p>  <img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807144618946.png" alt="image-20200807144618946"></p>
+<p>  频谱分析?</p>
+<ul>
+<li><h5 id="深度高斯过程变分推断"><a href="#深度高斯过程变分推断" class="headerlink" title="深度高斯过程变分推断"></a>深度高斯过程变分推断</h5><p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807163946175.png" alt="image-20200807163946175"></p>
+<p>dropoutu NN 中的权重用 伯努利分布作为mask 相乘来建模</p>
+<p>推导部分在作者博客中更详细</p>
+</li>
+</ul>
+<blockquote>
+<p>详情见作者的博客<a target="_blank" rel="noopener" href="http://www.cs.ox.ac.uk/people/yarin.gal/website/blog_3d801aa532c1ce.html#uncertainty-sense"><strong>What My Deep Model Doesn’t Know…中的Why Does It Even Make Sense?</strong></a>·</p>
+<p>这个积分用 Monte Carlo integration 蒙特卡洛积分来近似</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807152600466.png" alt="image-20200807152600466"></p>
+<p>用了重参数化，使得可微：可结合<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/81170602">nameoverflow的 zhihu blog</a></p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807160424278.png" alt="image-20200807160424278"></p>
+<p>对 $q(W)$ 的形式，给出了一个混合尺度高斯先验（scale mixture gaussian prior）</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807160603257.png" alt="image-20200807160603257"></p>
+<p>对上面损失函数的第一项做近似，用 w 的一个点估计？蒙特卡洛积分的累加和 1/n抵消</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807160755395.png" alt="image-20200807160755395"></p>
+<p>scaling 防止 个数越多影响越大？可以证得这是前面损失函数的一个无偏估计，形式上已经可以看出是 dropout NN的经典损失函数形式 (对于回归问题而言)</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807160900121.png" alt="image-20200807160900121"></p>
+</blockquote>
+<p><strong>从 Bayesian 角度，解释了 why dropout works</strong>。与dropout as noise regularization 很相似，approximation 也在引入 noise</p>
+<h3 id="4-Obtaining-Model-Uncertainty"><a href="#4-Obtaining-Model-Uncertainty" class="headerlink" title="4. Obtaining Model Uncertainty"></a>4. Obtaining Model Uncertainty</h3><p>对dropout NN 做 T 次前向传播，每次dropout 的权重都不同，数学表达即 T 组 mask：</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807165529067.png" alt="image-20200807165529067"></p>
+<p>对输出分布做一阶矩估计，求输出分布的期望，采用蒙特卡洛积分：</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807165714931.png" alt="image-20200807165714931"></p>
+<p>对输出分布做二阶矩估计，同样用蒙特卡洛积分：</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807170037550.png" alt="image-20200807170037550"></p>
+<p>对输出的不确定性估计，在二阶矩的基础上还要减去一阶矩的平方：</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807170124788.png" alt="image-20200807170124788"></p>
+<p>​                                                                                      <img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807170131131.png" alt="image-20200807170131131"></p>
+<p>Gaussian process precision：</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807170803587.png" alt="image-20200807170803587"></p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807170842588.png" alt="image-20200807170842588"></p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807171402274.png" alt="image-20200807171402274"></p>
+<p>我们的预测分布 $q(y^∗|x^∗)$ 预计是高度多模态的，上面的近似只给出了它的属性的一个粗略的了解。这是因为在每个权重矩阵列上放置的近似变分分布是双模态的，因此在每一层的权重上的联合分配是多模态的(附录3.2节)。注意，dropout NN模型本身并没有改变。为了估计预测均值和预测不确定性，我们简单地收集随机正向通过模型的结果。因此，该信息可以用于现有的基于dropout训练的神经网络模型。此外，向前传播可以同时进行，在恒定的运行时间内完成，与标准 dropout一致</p>
+<p><strong>双模态</strong> <strong>多模态</strong>说法可以看： 即 混合高斯先验模型和 dropout 的 伯努利分布 的混合</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807172120631.png" alt="image-20200807172120631"></p>
+<h3 id="5-Experiments"><a href="#5-Experiments" class="headerlink" title="5. Experiments"></a>5. Experiments</h3><p>接下来，我们在回归和分类的任务上，对从dropout  NNs and convnets 中获得的不确定性估计的性质进行了广泛的评估。以MNIST (LeCun &amp; Cortes, 1998)为例，比较了不同模型体系结构和非线性对分类任务的不确定性，表明模型不确定性对分类任务很重要。然后，我们表明，使用dropout的不确定性，我们可以在预测对数似然和RMSE log-likelihood and RMSE  方面取得相当大的改进，与现有的先进的方法。最后，我们以使用 model’s  uncertainty  in  a  Bayesian  pipeline. </p>
+<h5 id="5-1-Model-Uncertainty-in-Regression-Tasks"><a href="#5-1-Model-Uncertainty-in-Regression-Tasks" class="headerlink" title="5.1. Model Uncertainty in Regression Tasks"></a>5.1. Model Uncertainty in Regression Tasks</h5><p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807223933825.png" alt="image-20200807223933825"></p>
+<p>蓝色虚线右边是寻来你集外的数据，蓝色阴影部分different shades of blue represent half a standard deviation b、c两图表示模型输出的不确定性，d图输出零附近，也是输出了模型对结果的不确定性。</p>
+<p>外推结果如图2所示。模型在训练数据(蓝色虚线的左边)上进行测试，并在整个数据集上进行测试。图2a显示了5层模型的标准dropout(即with weight averaging and without assessing model uncertaint)的结果。图2b显示了用平方指数协方差函数的高斯过程 Gaussian process with a squared exponential covariance function得到的结果。图2c显示了与图2a相同的网络的结果，但是使用了MC dropout来评估训练集和测试集的预测均值和不确定性。最后，图2d使用5层的TanH网络显示了相同的结果(为实现可视化目的，用8倍的标准偏差绘制)。蓝色的阴影表示模型的不确定性:每个颜色梯度colour gradient 表示半个标准偏差( 在预测平均值的正/负总共2个标准偏差内，代表95%的置信度 )。没有绘制的是具有4层的模型，因为它们收敛于相同的结果。</p>
+<p>通过对观测数据的外推，没有一个模型可以消除这种周期性(尽管有了合适的covariancefunction，GP可以很好地捕捉到它)。标准的dropout NN模型(图2a)对point $x^∗$(用虚线标记)的值预测为0，具有很高的可信度，尽管这显然不是一个合理的预测。GP模型通过增加其预测的不确定性来表示这一点——实际上宣布预测值可能为0，但模型是不确定的。这种行为也在MC dropout中捕获。即使图2中的模型有一个不正确的预测平均值，增加的标准差表达了模型关于点的不确定性。请注意，ReLU模型的不确定性远远大于数据，而TanH模型的不确定性是有界的。图3。对于mcdropout模型的relnm -linear的Mauna loaco2浓度数据集的预测平均值和不确定性，近似于10个样本。</p>
+<p>因为dropout的不确定性来自GP的属性，在GP中，不同的协方差函数对应于不同的不确定性估计。ReLU和TanH近似具有不同的GP协方差函数（附录中的第3.1节），TanH饱和，而ReLU不饱和。对于TanH模型，我们使用dropout概率0.1和dropout概率0.2来评估不确定性。最初以dropout概率0.1初始化的模型显示出的不确定性要比以dropout概率0.2初始化的模型要小，但是当模型converged the uncertainty后，接近优化的末尾几乎无法区分dropout概率的不同。dropout模型的矩收敛到近似GP模型的矩——它的均值和不确定性。值得一提的是，我们尝试将数据与层数较少的模型拟合失败。为进行绘图，用于估计不确定度（T）的正向迭代次数为1000。可以使用更小的数字来对预测平均值和不确定性进行合理估计（例如，图3，T = 10）    </p>
+<h5 id="5-2-Model-Uncertainty-in-Classification-Tasks"><a href="#5-2-Model-Uncertainty-in-Classification-Tasks" class="headerlink" title="5.2. Model Uncertainty in Classification Tasks"></a>5.2. Model Uncertainty in Classification Tasks</h5><p>为了评估模型分类的可信度，我们测试了一个在完整MNIST数据集上训练的卷积神经网络(LeCun &amp; Cortes, 1998)。我们训练了LeNet卷积神经网络模型(Le-Cun et al.， 1998)，在最后一个完全连接的内积层(convnets中使用dropout的通常方式)之前使用dropout。dropout概率是0.5。我们使用相同的 learning rate policy训练了10^6个迭代的模型，就像之前使用的一样，使用的是(= 0.0001andp= 0.75)。我们使用Caffe (Jia et al.， 2014)作为本实验的参考实现。</p>
+<p>我们用数字1的连续旋转图像(如图4的x轴所示)输入评估了训练后的模型，For the 12 images, the model predicts classes [11 1 1 1 5 5 7 7 7 7 7]</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807234027807.png" alt="image-20200807234027807"></p>
+<p> if the uncertainty envelopeintersects that of other classes (such as in the case of themiddle input image), then even though the softmax outputcan be arbitrarily high (as far as 1 if the mean is far fromthe means of the other classes), the softmax output uncer-tainty can be as large as the entire space</p>
+<h4 id="5-3-Predictive-Performance"><a href="#5-3-Predictive-Performance" class="headerlink" title="5.3. Predictive Performance"></a>5.3. Predictive Performance</h4><p>预测对数似然表示模型拟合数据的程度，数值越大表示模型拟合得越好。不确定性的质量也可以从这个数量来确定(见附录中的4.4节)。我们复制了Herńandez Lobato&amp;Adams（2015）中的实验设置，并比较了RMSE和 predictive  log-likelihood  of dropout （在实验中称为“dropout ”）与概率反向传播 Probabilistic  Back-propagation（称为“PBP”, (Hern ́andez-Lobato &amp; Adams, 2015)到贝叶斯网络中的一种流行的变分推理技术(即“VI”，(Graves, 2011))。本实验的目的是 比较 在 naive 神经网络中应用 dropout 获得的不确定度质量 与 为获取不确定度而开发的专门方法的不确定度质量</p>
+<p>根据我们对dropout的贝叶斯解释Bayesian interpretation of dropout(eq.(4))，我们需要定义一个先验的长度尺度，并找到一个optimal模型精度参数<img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807235518120.png" alt="image-20200807235518120">，该参数将允许我们评估预测对数似然(eq.(8))。我们使用Bayesian optimisation  (BO, (Snoek et al., 2012; Snoek &amp; authors,2015))在验证集的log-likelihood to find optimal <img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807235518120.png" alt="image-20200807235518120">，并设置 prior length-scale为 $10^{−2}$的大多数数据集基于数据的范围。请注意，这是一个标准的dropoutNN，其中，具体操作：</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/image-20200807235911802.png" alt="image-20200807235911802"></p>
+<h5 id="5-4-Model-Uncertainty-in-Reinforcement-Learning"><a href="#5-4-Model-Uncertainty-in-Reinforcement-Learning" class="headerlink" title="5.4. Model Uncertainty in Reinforcement Learning"></a>5.4. Model Uncertainty in Reinforcement Learning</h5><p>强化学习一个agent从不同的状态得到不同的回报，它的目标是随着时间的推移使其期望的结果最大化。agent试图学会避免掉到rewards小的state，并选择能导致更好的state的action。在这项任务中，不确定性是非常重要的——有了不确定性信息，agent就可以决定何时利用其所知道的奖励，以及何时探索它环境。</p>
+<p>最近RL的发展利用NNs来估计 agents’  Q-value  functions（称为Q网络），这种函数可以估计不同行为的质量agent可以采取不同的状态。这导致了在Atari游戏模拟方面取得了令人印象深刻的结果，在这些模拟中，agents 在各种游戏中超过人的表现（Mnih et al.，2015）。在这个集合中使用了Epsilon贪心搜索Epsilon greedy search ，在这个集合中，智能体以一定的概率根据当前的Q函数估计选择最佳动作，否则进行解释。利用dropout  Q-network给出的不确定性估计，我们可以使用诸如康普逊抽样（汤普森，1933）等技术来更快地收敛epsilon greedy并且avoiding over-fitting</p>
+<p>我们训练了原始模型，并在每个权重层之前应用了一个概率为0.1的additional  modelwith dropout。注意，为了进行比较，在这个实验中，两个agent使用相同的网络结构。在使用dropout的真实世界场景中，我们将使用一个更大的模型(因为原始模型被有意地选择为较小的以避免过度拟合)。为了利用dropout Q-network的不确定性估计，我们使用Thompson sampling而不是epsilon贪婪。实际上，这意味着每次我们需要采取action时，我们都会执行一个单一的随机正向通过网络 a  single  stochastic  forward  pass 。在回放中，我们执行一个随机正向传递，然后用抽样的伯努利随机变量进行反向传播。在appendix的第E.2节中给出了确切的实验设置</p>
+<h3 id="6-Conclusions-and-Future-Research"><a href="#6-Conclusions-and-Future-Research" class="headerlink" title="6. Conclusions and Future Research"></a>6. Conclusions and Future Research</h3>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>guo jiazhen
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://jasonguojz.github.io/blog/2020/07/29/Dropout%20as%20a%20Bayesian%20Approximation%20Representing%20Model%20Uncertainty%20in%20Deep%20Learning/" title="Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning">https://jasonguojz.github.io/blog/2020/07/29/Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/MC-dropout/" rel="tag"># MC dropout</a>
+              <a href="/blog/tags/bi-model/" rel="tag"># bi-model</a>
+              <a href="/blog/tags/deep-Gaussian-processes/" rel="tag"># deep Gaussian processes</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/2020/07/28/What%20Uncertainties%20Do%20We%20Need%20in%20Bayesian%20DeepLearning%20for%20Computer%20Vision/" rel="prev" title="What Uncertainties Do We Need in Bayesian DeepLearning for Computer Vision?">
+      <i class="fa fa-chevron-left"></i> What Uncertainties Do We Need in Bayesian DeepLearning for Computer Vision?
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/blog/2020/07/30/On%20Calibration%20of%20Modern%20Neural%20Networks/" rel="next" title="On Calibration of Modern Neural Networks">
+      On Calibration of Modern Neural Networks <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E3%80%8EDropout-as-a-Bayesian-Approximation-Representing-Model-Uncertainty-in-Deep-Learning%E3%80%8F%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0"><span class="nav-number">1.</span> <span class="nav-text">『Dropout as a Bayesian Approximation Representing Model Uncertainty in Deep Learning』阅读笔记</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Abstract"><span class="nav-number">2.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Introduction"><span class="nav-number">3.</span> <span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Related-Research"><span class="nav-number">4.</span> <span class="nav-text">2. Related Research</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Dropout-as-a-Bayesian-Approximation"><span class="nav-number">5.</span> <span class="nav-text">3. Dropout as a Bayesian Approximation</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#common-dropout-NN-non-probabilistic-NN"><span class="nav-number">5.0.1.</span> <span class="nav-text">common dropout NN( non-probabilistic NN)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#deep-Gaussian-process"><span class="nav-number">5.0.2.</span> <span class="nav-text">deep Gaussian process</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E9%AB%98%E6%96%AF%E8%BF%87%E7%A8%8B%E5%8F%98%E5%88%86%E6%8E%A8%E6%96%AD"><span class="nav-number">5.0.3.</span> <span class="nav-text">深度高斯过程变分推断</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Obtaining-Model-Uncertainty"><span class="nav-number">6.</span> <span class="nav-text">4. Obtaining Model Uncertainty</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Experiments"><span class="nav-number">7.</span> <span class="nav-text">5. Experiments</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#5-1-Model-Uncertainty-in-Regression-Tasks"><span class="nav-number">7.0.1.</span> <span class="nav-text">5.1. Model Uncertainty in Regression Tasks</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-2-Model-Uncertainty-in-Classification-Tasks"><span class="nav-number">7.0.2.</span> <span class="nav-text">5.2. Model Uncertainty in Classification Tasks</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-3-Predictive-Performance"><span class="nav-number">7.1.</span> <span class="nav-text">5.3. Predictive Performance</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#5-4-Model-Uncertainty-in-Reinforcement-Learning"><span class="nav-number">7.1.1.</span> <span class="nav-text">5.4. Model Uncertainty in Reinforcement Learning</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-Conclusions-and-Future-Research"><span class="nav-number">8.</span> <span class="nav-text">6. Conclusions and Future Research</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name"></p>
+  <div class="site-description" itemprop="description">谦卑</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/blog/categories/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blog/tags/">
+          
+        <span class="site-state-item-count">77</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JasonGuojz" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JasonGuojz" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/blog/jzguovulcan@gmail.com" title="E-Mail → jzguovulcan@gmail.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="skype:yourname?call|chat" title="Skype → skype:yourname?call|chat" rel="noopener" target="_blank"><i class="fa fa-fw fa-skype"></i>Skype</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="Symbols count total">191k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">2:54</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/blog/js/utils.js"></script>
+
+<script src="/blog/js/motion.js"></script>
+
+
+<script src="/blog/js/schemes/muse.js"></script>
+
+
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/blog/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : '2M2aiiBff85KzN3JvTFsCV2J-9Nh9j0Va',
+      appKey     : '7n1fFOWyaLnTBNpNjRhYsF0W',
+      placeholder: "Please write your comments here",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

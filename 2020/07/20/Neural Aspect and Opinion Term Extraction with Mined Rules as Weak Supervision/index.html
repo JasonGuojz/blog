@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"jasonguojz.github.io","root":"/blog/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="提出了一种基于BiLSTM-CRF（双向LSTM条件随机场）的神经模型，用于aspect and opinion term extraction，训练数据使用人类注释数据作为基本事实ground truth 监督和用mined规则注释的数据作为弱监督进行训练，类似半监督，但是这个方法在利用未标记的数据时引入了学习到的领域知识，所以和远程监督利用外部KB也有关。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision">
+<meta property="og:url" content="https://jasonguojz.github.io/blog/2020/07/20/Neural%20Aspect%20and%20Opinion%20Term%20Extraction%20with%20Mined%20Rules%20as%20Weak%20Supervision/index.html">
+<meta property="og:site_name" content="Guo Jiazhen&#39;s Blog">
+<meta property="og:description" content="提出了一种基于BiLSTM-CRF（双向LSTM条件随机场）的神经模型，用于aspect and opinion term extraction，训练数据使用人类注释数据作为基本事实ground truth 监督和用mined规则注释的数据作为弱监督进行训练，类似半监督，但是这个方法在利用未标记的数据时引入了学习到的领域知识，所以和远程监督利用外部KB也有关。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200801234518451.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200801234542926.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802092207665.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802093738286.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802093813363.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802100757705.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802102718668.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802105043740.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200801234518451.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802115202026.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802115211130.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802120129926.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802140038838.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802141601709.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802141608237.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802141627550.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802141638261.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802141648624.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802144240086.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802144518345.png">
+<meta property="article:published_time" content="2020-07-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-08-22T09:06:19.051Z">
+<meta property="article:tag" content="sentiment analysis">
+<meta property="article:tag" content="aspect and opinion terms extraction">
+<meta property="article:tag" content="BiLSTM-CRF">
+<meta property="article:tag" content="rule mining">
+<meta property="article:tag" content="semi-supervision">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200801234518451.png">
+
+<link rel="canonical" href="https://jasonguojz.github.io/blog/2020/07/20/Neural%20Aspect%20and%20Opinion%20Term%20Extraction%20with%20Mined%20Rules%20as%20Weak%20Supervision/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision | Guo Jiazhen's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Guo Jiazhen's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blog/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags<span class="badge">77</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/blog/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories<span class="badge">28</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">21</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/20/Neural%20Aspect%20and%20Opinion%20Term%20Extraction%20with%20Mined%20Rules%20as%20Weak%20Supervision/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="谦卑">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Guo Jiazhen's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-07-20 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-20T00:00:00+08:00">2020-07-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-22 17:06:19" itemprop="dateModified" datetime="2020-08-22T17:06:19+08:00">2020-08-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Distant-Supervision/" itemprop="url" rel="index"><span itemprop="name">Distant Supervision</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Neural-Networks-with-Logic-Rules/" itemprop="url" rel="index"><span itemprop="name">Neural Networks with Logic Rules</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Sentiment-Analysis/" itemprop="url" rel="index"><span itemprop="name">Sentiment Analysis</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/blog/2020/07/20/Neural%20Aspect%20and%20Opinion%20Term%20Extraction%20with%20Mined%20Rules%20as%20Weak%20Supervision/" class="post-meta-item leancloud_visitors" data-flag-title="Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/blog/2020/07/20/Neural%20Aspect%20and%20Opinion%20Term%20Extraction%20with%20Mined%20Rules%20as%20Weak%20Supervision/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/blog/2020/07/20/Neural%20Aspect%20and%20Opinion%20Term%20Extraction%20with%20Mined%20Rules%20as%20Weak%20Supervision/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>10 mins.</span>
+            </span>
+            <div class="post-description"><div align=center>提出了一种基于BiLSTM-CRF（双向LSTM条件随机场）的神经模型，用于aspect and opinion term extraction，训练数据使用人类注释数据作为基本事实ground truth 监督和用mined规则注释的数据作为弱监督进行训练，类似半监督，但是这个方法在利用未标记的数据时引入了学习到的领域知识，所以和远程监督利用外部KB也有关。</div></div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <a id="more"></a>
+<h3 id="『Neural-Aspect-and-Opinion-Term-Extraction-with-Mined-Rules-as-Weak-Supervision』阅读笔记"><a href="#『Neural-Aspect-and-Opinion-Term-Extraction-with-Mined-Rules-as-Weak-Supervision』阅读笔记" class="headerlink" title="『Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision』阅读笔记"></a>『Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision』阅读笔记</h3><p>opinion term 和其描述的 aspect 以及 sentiment 高度相关。如果在抽取出 aspect 及预测出sentiment 同时，能给出表明该 sentiment 的 opinion term，将会使结果更加完整：aspect 给出了带有情感的评论目标，sentiment 给出了对目标的情感极性，opinion term 给出了情感的原因，这三者依次回答了What（对于什么），How（情感怎么样）以及 Why（为什么是这个情感）三个问题，对于评论目标构成更全面的分析</p>
+<ol>
+<li>提出了一种<strong>基于BiLSTM-CRF</strong>（双向LSTM条件随机场）的神经模型，<strong>用于aspect  and  opinion  term extraction</strong>，训练数据<strong>使用人类注释数据作为基本事实ground truth 监督和用mined规则注释的数据作为弱监督进行训练</strong>，类似半监督，但是这个方法在利用未标记的数据时引入了学习到的领域知识，所以和远程监督利用外部KB也有关。</li>
+<li>自动挖掘的规则特点：<ul>
+<li>作者说是不超过三个单词的规则，否则相关实例稀疏且对召回率的提高不大</li>
+<li>其中一类基本类似关系挖掘得到的三元组，关系是 依存关系中的</li>
+<li>另一类 是一对三元组，含义是 挖掘类似”联想”关系的一对，相同的 opinion term。</li>
+</ul>
+</li>
+<li>在挖掘 aspect term时，需要事先准备 predefined opinion word vocabulary；文章认为 当提取 aspect term时，关注 动词和名词；当提取 opinion时 考虑adjectives, nouns and verbs，还要建立一个 opinion word vocabulary </li>
+<li>具体实现中还采取不少提高效率的方法。</li>
+</ol>
+<h4 id="code"><a href="#code" class="headerlink" title="code"></a><a target="_blank" rel="noopener" href="https://github.com/HKUST-KnowComp/RINANTE">code</a></h4><h3 id="专有名词"><a href="#专有名词" class="headerlink" title="专有名词"></a>专有名词</h3><h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h3><p>我们首先提出一种算法，该算法基于依存分析结果dependency parsing results从现有的训练示例<strong>中自动挖掘提取规则 mine extraction rules。然后将挖掘的规则应用于标记大量辅助数据。</strong>最后，我们研究既可以从规则自动标记的数据中学习，也可以从人为准确注释的少量数据中学习的模型的训练过程，以训练这样的神经模型。实验结果表明，尽管挖掘的规则由于灵活性有限而不能很好地发挥作用，但是人类注释数据和带有规则标记的辅助数据的组合可以改善神经模型。</p>
+<h3 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1  Introduction"></a>1  Introduction</h3><p>产品评论中有两种类型的字词或词组（或服务，餐厅等评论，为方便起见，我们在本文中使用“产品评论”）对于意见挖掘opinion  mining尤其重要：描述产品属性或属性的词或短语；以及与评论者对产品或产品方面有关的观点的看法。前者称为<strong>方面术语aspect terms</strong>，后者称为<strong>见解术语 opinion  terms</strong>。例如，在“笔记本电脑的速度speed令人难以置信incredible”这句话中，“speed”是一个方面的术语，“incredible”是一个见解的术语。方面和观点术语提取的任务是从产品评论中提取上述两种类型的术语。</p>
+<p>基于规则的方法Rule  based  approaches  (Qiu  et  al.,  2011;  Liuet al., 2016) 和基于学习learning based 的方法 (Jakoband Gurevych, 2010; Wang et al., 2016)是完成此任务的两种主要方法。基于规则的方法通常使用基于dependency parsing结果的手动设计的规则来提取术语。这些方法的优点在于，可以始终提取在句子中使用某些<strong>特定模式</strong>的 aspect or opinion terms。</p>
+<p><strong>基于学习的方法</strong>将aspect or opinion terms提取 建模 为<strong>序列标记问题sequence  labeling problem</strong>。尽管它们能够获得更好的性能，但它们还存在必须使用大量标记数据来训练此类模型以发挥其全部潜力的问题，尤其是在没有手动设计输入功能时。否则，它们甚至可能在非常简单的测试用例中失败（例如，请参阅第4.5节）</p>
+<p>为了解决上述问题，我们<strong>首先使用基于规则的方法从辅助产品评论集中提取aspect  and  opinion  term ，这可以视为不正确的注释</strong> (use  a  <strong>rule  based  approach</strong>  to  <strong>extract  aspect and opinion terms from an auxiliary set of product reviews</strong>, which can be considered as inaccurate annotation)。这些<strong>规则</strong>是根据<strong>dependency parsing 结果</strong> <strong>从标记的数据</strong>中自动提取的。我们提出了一种<strong>基于BiLSTM-CRF</strong>（双向LSTM条件随机场）的神经模型，<strong>用于aspect  and  opinion  term extraction</strong>。神经模型<strong>使用人类注释数据作为基本事实ground truth 监督和用mined规则注释的数据作为弱监督进行训练</strong>。我们将方法命名为<em>RINANTE（Rule Incorporated Neural Aspect和Opinion Term Extraction）</em></p>
+<p>我们对三个 <strong>SemEval 数据集 </strong>进行实验，这些数据集在现有aspect  and  opinion  term extraction研究中经常使用。</p>
+<ul>
+<li>对 基于BiLSTM-CRF的神经模型的训练 不仅包含人工标记的数据，还包含<strong>规则</strong>自动标记的数据</li>
+<li>用于 aspect  and  opinion  term extraction 任务的数据标记规则 从based on dependency parsing and POS  tagging  results  自动找</li>
+<li>充分的对比实验</li>
+</ul>
+<h3 id="2-Related-Work"><a href="#2-Related-Work" class="headerlink" title="2  Related Work"></a>2  Related Work</h3><p>方法主要有三种：基于规则的方法，基于主题建模的方法topic  modeling  based  approaches和基于学习的方法</p>
+<h4 id="rule-based-approach"><a href="#rule-based-approach" class="headerlink" title="rule based approach:"></a><strong>rule based approach:</strong></h4><ol>
+<li><strong>based  on  dependency  parsing  results</strong>  (Zhuang  et  al.,  2006;  Qiuet al., 2011)： <strong>这些方法中的规则通常只涉及一个句子中最多三个单词（邱等，2011），这限制了其灵活性(但在后后面又对点做出了解释，在我们的规则挖掘算法中，我们只挖掘不超过三个单词的规则)。</strong>手工设计规则也是一项劳动密集型的工作。刘等。（2015b）提出了一种从一组预先设计的规则中选择一些规则的算法，使得所选择的规则子集能够更准确地进行抽取。然而，与我们所使用的规则挖掘算法不同，它无法自动发现规则。</li>
+<li><strong>Topic modeling approaches</strong> 主题 模型(Lin and He, 2009;Brody  and  Elhadad,  2010;  Mukherjee  and  Liu,2012) ：能得到 粗粒度的 aspects( <em>food,ambiance,service</em> for  restaurants,  and provide related words )(将主题作为隐变量，但不能具体extract 出exact aspect terms )</li>
+<li><strong>Learning  based  approaches</strong> by labeling each word in a sentence <strong>with BIO (Begin, Inside, Outside) tagging scheme</strong>(Ratinov and Roth, 2009)—(<strong>序列标记问题sequence  labeling problem</strong>)：用 CNN 或 BiLSTM 提取句子中每个word的特征，再用CRF获得更好的序列标记结果。Word  embeddings  是常用的功能，也可以将手工制作的特征例如  POS tag  classes 和  chunk  information  组合起来以产生更好的性能（Liu等人，2015a; Yin等人，2016）。例如，Wang et al（2016）基于一个以Word  embeddings为输入的句子的依存解析树 dependency parsing tree of a sentence 构造了一个recursive neural network。然后将神经网络的输出输入到CRF。XU等（2018）使用CNN模型 提取aspect terms。他们发现<strong>同时使用general-purpose and domain-specific  word  embeddings 可以提高性能</strong></li>
+</ol>
+<p>我们的方法<strong>利用未标记的额外数据来改善模型的性能</strong>，这与半监督学习和迁移学习有关。一些方法允许在序列标记中使用未标记的数据 Jiaoet al. (2006) propose semi-supervised CRF, Zhanget al. (2017) propose neural CRF autoencoder。与我们的方法不同，<strong>这些方法在使用未标记的数据时不会整合有关任务的知识</strong>。杨等（2017）提出了三种不同的转移学习架构，它们允许神经序列标记模型 learn from both the target task and a different but related task。文章中的模型utilizing <strong>the output of a rule based approach for the same problem </strong>，与上面的工作区别。</p>
+<p>我们的方法还与 weakly labeled data (Craven and Kumlien, 1999),  与信息抽取中使用的远程监管方法类似（Mintz等，2009）。</p>
+<h3 id="3-RINANTE"><a href="#3-RINANTE" class="headerlink" title="3  RINANTE"></a>3  RINANTE</h3><p>在本节中，我们详细介绍我们的方法 RINANTE。假设我们有一个带有人类注释的数据集 $D_l$ 和 一个辅助数据集$D_a$   $D_l$ 包含一组产品评论，<strong>每个评论中都带有所有方面和观点术语</strong>;    $D_a$ 只包含一组<strong>未标记的产品评论</strong>。<strong>在$D_l$  and $D_a$ 中，所有评价都针对相同类型或几种相似类型的产品</strong>。通常， $D_a$ 未标记的大小比 $D_1$ 大得多。然后，RINANTE包括以下步骤</p>
+<ol>
+<li>在 $D_l$  用 a rule mining algorithm 挖掘  a set of <strong>aspect extraction rules </strong> $R_a$ 和 opinion extraction rules $R_o$ .</li>
+<li>用 rules  $R_a$ 和 $R_o$  在 $D_a$ 的所有  reviews 中 提取 terms 作为 标签，则 $D_a$ 能被看成是 weakly labeled dataset <img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200801234518451.png" alt="image-20200801234518451" style="zoom:80%;" /></li>
+<li>用<img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200801234542926.png" alt="image-20200801234542926" style="zoom:80%;" /> 训练神经网络</li>
+</ol>
+<h4 id="3-1-Rule-Mining-Algorithm"><a href="#3-1-Rule-Mining-Algorithm" class="headerlink" title="3.1  Rule Mining Algorithm"></a>3.1  Rule Mining Algorithm</h4><p>rules 主要基于dependency  relations between words 因为它们的有效性已经通过现有的基于规则的方法得到了验证(Zhuang et al., 2006; Qiu et al., 2011)</p>
+<p>用三元组 $(rel, w_g,w_d)$ 表示依存关系，$w_g$ 是 governor支配词 $w_d$ 是 dependent从属词</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802092207665.png" alt="image-20200802092207665" style="zoom:80%;" /></p>
+<p>上图例子中：<em>“system”  is an aspect term, and “horrible” is an opinion term</em></p>
+<p><strong>常用的提取 aspect term 的规则：$(nsubj, O, noun^∗),$</strong> we use $O$ to represent a <strong>pattern</strong> that matches any word that belongs to a <strong>predefined opinion word vocabulary</strong>;   $noun^∗$ matches any <strong>noun word</strong> and the ∗ means that the matched word is <strong>output as the aspect word.</strong>  根据这个规则，如果 horrible 被 $O$ match到，则可以输出 aspect term “system”</p>
+<p><strong>细节：</strong> <strong>在我们的规则挖掘算法中，我们只挖掘不超过三个单词的规则</strong>，因为涉及很多单词的规则可能对召回recall的影响很小，但是挖掘起来在计算上却很昂贵，并且这种模式不经常发生所以需要尽多的标记数据来cover这种情况</p>
+<p>提取 aspect 和 提取 opinion 的算法相似</p>
+<p>算法包含两部分</p>
+<ol>
+<li>Generating <strong>rule candidates</strong> based on a <strong>training set</strong></li>
+<li><strong>Filtering</strong> the rule candidates based on their effectiveness on a <strong>validation set</strong></li>
+</ol>
+<div class="group-picture"><div class="group-picture-container"><div class="group-picture-row"><div class="group-picture-column" style="width: 50%;"><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802093738286.png" alt="image-20200802093738286" style="zoom:80%;" /></div><div class="group-picture-column" style="width: 50%;"><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802093813363.png" alt="image-20200802093813363" style="zoom:80%;" /></div></div></div></div>
+<p><strong>函数 RelatedS1Deps：</strong>  returns a list of dependency relations.   每个dependency relations里的governor or the dependent必须是 $s_i.aspect_terms$中的一个元素</p>
+<p><strong>PatternsFromS1Deps：</strong> 从上面返回的list中 得到 aspect term extraction patterns</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802100757705.png" alt="image-20200802100757705" style="zoom:80%;" /></p>
+<p>通过 POS得到 词性标注 (JJ - Adjective 形容词)，通过 $ps()$ 函数从POS tag得到 the word type。只有当 $ps(w)$ 是 $noun$ or $verb$ 才自动生成上述的 pattern 或者 $w_g$ 在 predefined  aspect term中时，生成关于 Opinion 的pattern是相似的。</p>
+<p><strong>RelatedS2Deps：</strong> 返回 a list that contains <strong>pairs of dependency relations</strong>  这个pair中的一个依存关系是RelatedS1Deps得到的，RelatedS2Deps的作用相当于为RelatedS1Deps生成的依存关系找到满足must have  one  word  in  common 的另一个依存关系。</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802102718668.png" alt="image-20200802102718668" style="zoom:80%;" /></p>
+<p> <strong>FrequentPatterns:</strong> obtains  the  rule  candidates。 用阈值$ T$ (T is a predefined parameter that can be determined based on the total number of sentences in S.) 划分出出现次数多的pattern</p>
+<p>RC1和RC2分别包含基于单个依赖关系和依赖关系对的候选抽取模式。将它们合并以获得最终规则候选者列表</p>
+<p>通过在验证集上extract  aspect terms 实验，用这个结果对 mined 到的 rule 的precision进行估计，<strong>用阈值</strong> $p$ 去掉准确率低的 rules。</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802105043740.png" alt="image-20200802105043740" style="zoom:80%;" /></p>
+<p>显示了从包含一个依赖关系的规则模式 $r$ 来 从句子$s$中 extracting aspect terms from a sentence的算法。</p>
+<p><strong>函数 TermFrom: </strong> tries to obtain the <strong>whole term</strong> based on this <strong>matched seed word</strong> 具体来说，当它是动词时，它仅返回单词 $w_s$。但是当$w_s$ 是名词时，它会返回由包含$w_s$的名词word的连续序列形成的名词短语。</p>
+<p>$V_{fil}$ includes the terms extracted with the candidate rules from the training set that are always incorrect经验法则。</p>
+<p><em>在实践中，我们还构建了一个词典，该词典包括在训练集中常用的aspect  terms  。该字典用于通过直接匹配提取方面的术语。(泛化能力？过于拟合在训练集上？)</em></p>
+<p><em>文章认为 当提取 aspect term时，关注 动词和名词；当提取 opinion时 考虑adjectives, nouns and verbs，还要建立一个 opinion word vocabulary</em> </p>
+<h5 id="Time-Complexity"><a href="#Time-Complexity" class="headerlink" title="Time Complexity"></a>Time Complexity</h5><h4 id="3-2-Neural-Model"><a href="#3-2-Neural-Model" class="headerlink" title="3.2  Neural Model"></a>3.2  Neural Model</h4><p>在 $D_l$ 中 mine 出 rule后，在 weakly labeled dataset <img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200801234518451.png" alt="image-20200801234518451" style="zoom:80%; display:inline" align="middle" />中 obtain the aspect and opinion terms in each sentence。得到 terms 后，标注为  BIO tag sequences(命名实体复用序列标注)</p>
+<p>由于挖掘的规则不准确，因此结果中可能存在<strong>冲突</strong>，即，可能会提取单词同时作为aspect term and an opinion term，所以对$D_a$ 中所有的 review，都保留aspect terms 和 opinion terms 两条 tag sequences。</p>
+<p>目标是网络模型应该能够从上述两个标签序列和一组手动标记的数据中同时学习，则表示为$t_a t_o t_m$ 分别是<strong>predicting the terms</strong> extracted by the aspect term extraction rules ……</p>
+<p>手动准确标记的数据中的 reviews 只需一个 tag sequence。然后我们可以训练一个既有ground truth supervision又有weak supervision的神经网络模型。我们提出了两个基于BiLSTM-CRF（Huang et al。，2015）的模型，可以基于这三个任务对其进行训练。其结构如图2所示。</p>
+<div class="group-picture"><div class="group-picture-container"><div class="group-picture-row"><div class="group-picture-column" style="width: 50%;"><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802115202026.png" alt="image-20200802115202026" style="zoom:80%;" /></div><div class="group-picture-column" style="width: 50%;"><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802115211130.png" alt="image-20200802115211130" style="zoom:80%;" /></div></div></div></div>
+<p>use pre-trained embeddings of the words in a sentence as input, then a BiLSTM-CRF structure is used to predict the labels  of  each  word.</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802120129926.png" alt="image-20200802120129926" style="zoom:80%;" /></p>
+<p><strong>训练过程：</strong></p>
+<ol>
+<li>交替训练三个任务 $t_a t_o t_m$ </li>
+<li>预先训练 $t_a$ and $t_o$ ，然后再训练 $t_m$ 。</li>
+</ol>
+<p>在第一种方法中，在每次迭代中，三个任务中的每一个都用于更新一次模型参数。</p>
+<p>在第二种方法中，首先模型对任务 $t_a t_o$ 进行预训练，这两个任务交替训练结束后。然后将训练好保留参数的模型用来训练 $t_m$</p>
+<p>引入早停正则化方法，对第一种方法或使用第二种方法训练  $t_m$ 时，根据验证集的性能（ aspect  term  extraction and opinion term extraction的F1分数之和）执行。  对第二种方法 与训练时，早停是根据 the sum of theF1scores of $t_a$ and $t_o$.</p>
+<p>在  BiLSTM layers and the word embedding layers 后 加入  dropout layers</p>
+<h3 id="4-Experiments"><a href="#4-Experiments" class="headerlink" title="4  Experiments"></a>4  Experiments</h3><h4 id="4-1-Datasets"><a href="#4-1-Datasets" class="headerlink" title="4.1  Datasets"></a>4.1  Datasets</h4><p>用三个数据集：<strong>SemEval-2014 Restaurants,  SemEval-2014  Laptops,  and  SemEval-2015  Restaurants</strong></p>
+<p>由于 SemEval 中使用的原始数据集在每个句子中都没有 annotation of the opinion terms，因此我们使用(Wang et al., 2016) and (Wang et al., 2017) 提供的 opinion term annotations。作为 $D_l$</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802140038838.png" alt="image-20200802140038838" style="zoom:80%;" /></p>
+<p>除了上述数据集，我们还使用了 Yelp dataset and  an  Amazon  Electronics  dataset  (Heand McAuley, 2016) as auxiliary data to be annotated with the mined rules.    作为 $D_a$，它们还用于训练 word embeddings。</p>
+<p><strong>Yelp dataset</strong> 作为 SE14-R and SE15-R. 的 auxiliary data——includes  4,153,150  reviews  that  are  for  144,072different  businesses.</p>
+<p><strong>Amazon  Electronics  dataset</strong> 作为  laptop  dataset  SE14-L 的 auxiliary data——1,689,188 reviews for 63,001 products such as lap-tops, TV, cell phones, etc.</p>
+<h4 id="4-2-Experimental-Setting"><a href="#4-2-Experimental-Setting" class="headerlink" title="4.2  Experimental Setting"></a>4.2  Experimental Setting</h4><p>对于每个SemEval数据集，我们拆分训练集，并使用20％作为验证集。</p>
+<p>对于SE14-L，我们将挖掘的规则应用于Amazon数据集的所有笔记本电脑评论，以获得自动注释的辅助数据，其中包括156,014条评论句子。</p>
+<p>对于SE14-R和SE15-R，我们从Yelp数据集中随机抽取4％的 restaurant review 句子以应用挖掘的规则，其中包括913,443个sentences。</p>
+<p>对于这两个自动注释的数据集，使用2,000个评论语句形成一个验证集，其余的用来形成训练集。它们在训练RINANTE的神经模型时使用。</p>
+<p>我们使用 Stanford CoreNLP (Manninget al., 2014) 执行 dependency parsing and POS tagging。对于所有三个数据集，规则挖掘算法的规则候选生成部分中的频率阈值整数 <strong>T</strong> 均设置为10；精度阈值  <strong>p</strong> 设置为0.6。</p>
+<p>我们将opinion  word  vocabulary  used  in  (Hu  andLiu,  2004)  用于aspect  term  extraction  rules。</p>
+<p>在Yelp数据集和Amazon数据集的所有  reviews 上分别使用  word2vec（Mikolov等人，2013）训练两组100维word embeddings。BiLSTMs 的隐藏层大小  are all set to <strong>100.</strong>   <strong>Dropout rate</strong> is set to  0.5 for the neural models.</p>
+<h4 id="4-3-Performance-Comparison"><a href="#4-3-Performance-Comparison" class="headerlink" title="4.3  Performance Comparison"></a>4.3  Performance Comparison</h4><div class="group-picture"><div class="group-picture-container"><div class="group-picture-row"><div class="group-picture-column" style="width: 100%;"><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802141601709.png" alt="image-20200802141601709" style="zoom:80%;" /></div></div><div class="group-picture-row"><div class="group-picture-column" style="width: 50%;"><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802141608237.png" alt="image-20200802141608237" style="zoom:80%;" /></div><div class="group-picture-column" style="width: 50%;"><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802141627550.png" alt="image-20200802141627550" style="zoom:80%;" /></div></div><div class="group-picture-row"><div class="group-picture-column" style="width: 50%;"><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802141638261.png" alt="image-20200802141638261" style="zoom:80%;" /></div><div class="group-picture-column" style="width: 50%;"><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802141648624.png" alt="image-20200802141648624" style="zoom:80%;" /></div></div></div></div>
+<ul>
+<li><p><strong>NCRF-AE(Zhang et al., 2017)：</strong>  it is a neural <strong>autoencoder</strong> model that uses <strong>CRF</strong>. It is able to  perform  <strong>semi-supervised</strong>  learning  for  <strong>sequence labeling.</strong> The Amazon laptop reviews and the Yelp restaurant reviews are also used as unlabeled data for this approach。</p>
+</li>
+<li><p><strong>HAST  (Li  et  al.,  2018):</strong>  It  proposes  to  use <strong>Truncated  History-Attention</strong>  and  <strong>Selective Transformation  Network</strong>  to  improve  aspect extraction</p>
+</li>
+<li><strong>DE-CNN   (Xu   et   al.,   2018):</strong>  DE-CNN feeds both general-purpose embeddings and domain-specific  embeddings  to  a  Convolutional Neural Network model.</li>
+</ul>
+<p>我们还比较了RINANTE的两个简化版本：直接使用挖掘的规则提取术语；仅使用人类注释数据来训练相应的神经模型。具体来说，第二个简化版本使用BiLSTM-CRF结构模型，将每个单词在句子中的 embeddings  作为输入。 This structure is also studied in (Liu et al., 2015a). We name this approach RINANTE (no rule) 即这个用于序列标注的结构是研究过的，用 weekly labeled data来增强了数据，在如何weekly label 上引入了自动 mine rule。</p>
+<p>从结果可以看出，只使用挖掘规则表现不佳。但是，通过从这些规则自动标记的数据中学习，RINANTE的所有四个版本都比RINANTE（无规则）具有更好的性能。这证明我们确实可以使用这些规则的结果来改善神经模型的性能。而且，对RINANTE（无规则）的改进在SE14-L 和 SE15-R上更加明显。我们认为这是因为SE14-L相对是困难得多的数据，而SE15-R的 人工标签数据要少得多。</p>
+<p>在四个版本的RINANTE中，RINANTE-Double-Pre在SE14-L和SE15-R上表现最佳，而RINANTE-Shared-Alt在SE14-R上则稍好。因此，我们认为，为了利用 Mined rules 的结果，与共享的 单独一层 BiLSTM 相比，使用两个分离的 BiLSTM 层作为 aspect terms and opinion terms 更为稳定。同样，对于这两个模型，我们介绍的两种训练方法都可能获得良好的性能。一般而言，RINANTE-Double-Pre的性能更稳定。</p>
+<p>与Double Propagation的 eight manually designed rules 相比 我们的算法能够挖掘数百个有效规则。</p>
+<p><strong>由性能没超过的方法</strong></p>
+<p>与其他方法相比，RI-NANTE（不包括RINANTE-Double-Pre†）仅在SE14-L和SE15-R的方面术语提取部分上无法提供最佳性能。在SE14-L，DE-CNN表现更好。但是，我们的方法同时提取了 aspect terms and opinion term，而DE-CNN和HAST仅关注 aspect terms。在SE15-R上，方面术语提取的最佳性能系统是Elixa，它依赖于手工制作的功能</p>
+<h4 id="4-4-Mined-Rule-Results"><a href="#4-4-Mined-Rule-Results" class="headerlink" title="4.4  Mined Rule Results"></a>4.4  Mined Rule Results</h4><p>我们的规则挖掘算法提取的规则数量以及它们在测试集上提取的aspect and opinion terms。使用Intel i7-7700HQ在计算机上的每个数据集上挖掘这些规则所需的时间不到10秒2.8GHz CPU。在SE15-R上挖掘最少的规则，因为此数据集包含最少的训练样本。这还会导致挖掘的规则在此数据集上的性能较差。我们还显示了从SE14-L中提取的一些example aspect extraction rule，以及它们可以匹配并从中提取术语的例句。只需看一下模式，就很容易猜出第一，第二和第三条规则的“意图”。实际上，第一条规则和第二条规则通常用于基于规则的方面术语提取方法中（Zhuang等，2006； Qiu等，2011）。但是，我们仔细检查了所有的碎屑规则，发现它们实际上就像表4中的第四条规则，很难通过检查数据来手动设计。这也显示了人类设计此类规则的局限性。</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802144240086.png" alt="image-20200802144240086" style="zoom:80%;" /></p>
+<h4 id="4-5-Case-Study"><a href="#4-5-Case-Study" class="headerlink" title="4.5  Case Study"></a>4.5  Case Study</h4><p>为了帮助您了解我们的方法是如何工作的，并获得了一些关于如何进一步改进它的见解，我们在表5中显示了SE14-L的一些示例语句，并附带了RINANTE（无规则）提取的方面条款，约束规则，RINANTE（RINANTE-Double-Pre）和DE-CNN。在第一行中，可以通过基于规则的方法轻松提取方面术语“ SuperDrive”。但是，如果没有足够的培训数据，那么RINANTE（无规则）仍然无法识别它。在第二行中，我们看到这些规则还可以帮助避免提取错误的术语。第三行也很有趣：虽然挖掘的规则仅提取“microphones”，但RI-NANTE仍然能够获得正确的短语“external microphones“，而不是盲目地遵循挖掘的规则。最后一行中的句子还具有一个方面术语，可以很容易地用规则将其提取出来。RINANTE的结果也是正确的。但是RINANTE（无规则）和DE-CNN都无法提取它。</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/image-20200802144518345.png" alt="image-20200802144518345"></p>
+<h3 id="5-Conclusion-and-Future-Work"><a href="#5-Conclusion-and-Future-Work" class="headerlink" title="5  Conclusion and Future Work"></a>5  Conclusion and Future Work</h3>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>guo jiazhen
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://jasonguojz.github.io/blog/2020/07/20/Neural%20Aspect%20and%20Opinion%20Term%20Extraction%20with%20Mined%20Rules%20as%20Weak%20Supervision/" title="Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision">https://jasonguojz.github.io/blog/2020/07/20/Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/sentiment-analysis/" rel="tag"># sentiment analysis</a>
+              <a href="/blog/tags/aspect-and-opinion-terms-extraction/" rel="tag"># aspect and opinion terms extraction</a>
+              <a href="/blog/tags/BiLSTM-CRF/" rel="tag"># BiLSTM-CRF</a>
+              <a href="/blog/tags/rule-mining/" rel="tag"># rule mining</a>
+              <a href="/blog/tags/semi-supervision/" rel="tag"># semi-supervision</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/2020/07/19/Biomedical%20Event%20Extraction%20Based%20on%20Knowledge-driven%20Tree-LSTM/" rel="prev" title="Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM">
+      <i class="fa fa-chevron-left"></i> Biomedical Event Extraction Based on Knowledge-driven Tree-LSTM
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/blog/2020/07/21/A%20Short%20Introduction%20to%20Probabilistic%20Soft%20Logic/" rel="next" title="A Short Introduction to Probabilistic Soft Logic 阅读笔记">
+      A Short Introduction to Probabilistic Soft Logic 阅读笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E3%80%8ENeural-Aspect-and-Opinion-Term-Extraction-with-Mined-Rules-as-Weak-Supervision%E3%80%8F%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0"><span class="nav-number">1.</span> <span class="nav-text">『Neural Aspect and Opinion Term Extraction with Mined Rules as Weak Supervision』阅读笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#code"><span class="nav-number">1.1.</span> <span class="nav-text">code</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%93%E6%9C%89%E5%90%8D%E8%AF%8D"><span class="nav-number">2.</span> <span class="nav-text">专有名词</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Abstract"><span class="nav-number">3.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Introduction"><span class="nav-number">4.</span> <span class="nav-text">1  Introduction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Related-Work"><span class="nav-number">5.</span> <span class="nav-text">2  Related Work</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#rule-based-approach"><span class="nav-number">5.1.</span> <span class="nav-text">rule based approach:</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-RINANTE"><span class="nav-number">6.</span> <span class="nav-text">3  RINANTE</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-Rule-Mining-Algorithm"><span class="nav-number">6.1.</span> <span class="nav-text">3.1  Rule Mining Algorithm</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Time-Complexity"><span class="nav-number">6.1.1.</span> <span class="nav-text">Time Complexity</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-Neural-Model"><span class="nav-number">6.2.</span> <span class="nav-text">3.2  Neural Model</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Experiments"><span class="nav-number">7.</span> <span class="nav-text">4  Experiments</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-Datasets"><span class="nav-number">7.1.</span> <span class="nav-text">4.1  Datasets</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-Experimental-Setting"><span class="nav-number">7.2.</span> <span class="nav-text">4.2  Experimental Setting</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-Performance-Comparison"><span class="nav-number">7.3.</span> <span class="nav-text">4.3  Performance Comparison</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-Mined-Rule-Results"><span class="nav-number">7.4.</span> <span class="nav-text">4.4  Mined Rule Results</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-5-Case-Study"><span class="nav-number">7.5.</span> <span class="nav-text">4.5  Case Study</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Conclusion-and-Future-Work"><span class="nav-number">8.</span> <span class="nav-text">5  Conclusion and Future Work</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name"></p>
+  <div class="site-description" itemprop="description">谦卑</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/blog/categories/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blog/tags/">
+          
+        <span class="site-state-item-count">77</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JasonGuojz" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JasonGuojz" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/blog/jzguovulcan@gmail.com" title="E-Mail → jzguovulcan@gmail.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="skype:yourname?call|chat" title="Skype → skype:yourname?call|chat" rel="noopener" target="_blank"><i class="fa fa-fw fa-skype"></i>Skype</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="Symbols count total">191k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">2:54</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/blog/js/utils.js"></script>
+
+<script src="/blog/js/motion.js"></script>
+
+
+<script src="/blog/js/schemes/muse.js"></script>
+
+
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/blog/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : '2M2aiiBff85KzN3JvTFsCV2J-9Nh9j0Va',
+      appKey     : '7n1fFOWyaLnTBNpNjRhYsF0W',
+      placeholder: "Please write your comments here",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

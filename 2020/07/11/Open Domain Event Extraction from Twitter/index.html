@@ -17,15 +17,15 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"jasonguojz.github.io","root":"/blog/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"jasonguojz.github.io","root":"/blog/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.">
+  <meta name="description" content="从twitter文本中提取calendar event(重要事件)，包括type和确切的时间的pipeline模型">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Open Domain Event Extraction from Twitter">
 <meta property="og:url" content="https://jasonguojz.github.io/blog/2020/07/11/Open%20Domain%20Event%20Extraction%20from%20Twitter/index.html">
 <meta property="og:site_name" content="Guo Jiazhen&#39;s Blog">
-<meta property="og:description" content="Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.">
+<meta property="og:description" content="从twitter文本中提取calendar event(重要事件)，包括type和确切的时间的pipeline模型">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200705193641839.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200705205639212.png">
@@ -42,7 +42,12 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200308154402927.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200308154656117.png">
 <meta property="article:published_time" content="2020-07-10T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-08-21T15:56:59.268Z">
+<meta property="article:modified_time" content="2020-08-22T09:05:46.621Z">
+<meta property="article:tag" content="gibbs sampling">
+<meta property="article:tag" content="twitter">
+<meta property="article:tag" content="linear chain CRF model">
+<meta property="article:tag" content="LDA">
+<meta property="article:tag" content="calendar event">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200705193641839.png">
 
@@ -132,9 +137,19 @@
     <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
 
   </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blog/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags<span class="badge">77</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/blog/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories<span class="badge">28</span></a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">21</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -222,11 +237,59 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-21 23:56:59" itemprop="dateModified" datetime="2020-08-21T23:56:59+08:00">2020-08-21</time>
+                <time title="Modified: 2020-08-22 17:05:46" itemprop="dateModified" datetime="2020-08-22T17:05:46+08:00">2020-08-22</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Event-Extraction/" itemprop="url" rel="index"><span itemprop="name">Event Extraction</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Topic-Model/" itemprop="url" rel="index"><span itemprop="name">Topic Model</span></a>
+                </span>
+            </span>
 
           
-            <div class="post-description">Sorry, but the page you were trying to view does not exist --- perhaps you can try searching for it below.</div>
+            <span id="/blog/2020/07/11/Open%20Domain%20Event%20Extraction%20from%20Twitter/" class="post-meta-item leancloud_visitors" data-flag-title="Open Domain Event Extraction from Twitter" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/blog/2020/07/11/Open%20Domain%20Event%20Extraction%20from%20Twitter/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/blog/2020/07/11/Open%20Domain%20Event%20Extraction%20from%20Twitter/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>7.3k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>7 mins.</span>
+            </span>
+            <div class="post-description"><div align=center>从twitter文本中提取calendar event(重要事件)，包括type和确切的时间的pipeline模型</div></div>
 
         </div>
       </header>
@@ -237,7 +300,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <ol>
+        <a id="more"></a>
+<h3 id="『Open-Domain-Event-Extraction-from-Twitter』阅读笔记"><a href="#『Open-Domain-Event-Extraction-from-Twitter』阅读笔记" class="headerlink" title="『Open Domain Event Extraction from Twitter』阅读笔记"></a>『Open Domain Event Extraction from Twitter』阅读笔记</h3><ol>
 <li>Open Domain</li>
 <li>根据<strong>[Named entity recognition in tweets: An experimental study.]</strong>中的模型 twitter文本有较多OOV(用Brown Cluster对lexical variations产生的OOV进行聚类来解决OOV)，manually annotated tweets as in-domain data 用于train POS system(特殊的词性标注集)，CRF(包含Brown Cluster的feature函数以及以及POS dictionary，spelling and contextual feature)，来完成POS tag任务。 named entity segmentation和classification任务的具体细节见文章</li>
 <li>event phrase extraction——即EE任务中的对event mention的提取，用 linear chain CRF model作为序列标注任务的模型，识别trigger(这里的CRF用到的特征函数包括 contextual, dictionary, and orthographic features, and also include features based on our Twitter-tuned POS tagger [Named entity recognition in tweets: An experimental study], and dictionaries of event terms gathered from WordNet by Sauri et al.[Evita: a robust event recognizer for QA systems.])</li>
@@ -398,8 +462,32 @@
     
     
     
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>guo jiazhen
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://jasonguojz.github.io/blog/2020/07/11/Open%20Domain%20Event%20Extraction%20from%20Twitter/" title="Open Domain Event Extraction from Twitter">https://jasonguojz.github.io/blog/2020/07/11/Open Domain Event Extraction from Twitter/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/gibbs-sampling/" rel="tag"># gibbs sampling</a>
+              <a href="/blog/tags/twitter/" rel="tag"># twitter</a>
+              <a href="/blog/tags/linear-chain-CRF-model/" rel="tag"># linear chain CRF model</a>
+              <a href="/blog/tags/LDA/" rel="tag"># LDA</a>
+              <a href="/blog/tags/calendar-event/" rel="tag"># calendar event</a>
+          </div>
 
         
 
@@ -407,12 +495,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/blog/2020/07/10/A%20Short%20Introduction%20to%20Probabilistic%20Soft%20Logic/" rel="prev" title="A Short Introduction to Probabilistic Soft Logic 阅读笔记">
-      <i class="fa fa-chevron-left"></i> A Short Introduction to Probabilistic Soft Logic 阅读笔记
+    <a href="/blog/2020/07/10/%E6%A6%82%E5%BF%B5%E5%90%8D%E8%AF%8D%E8%A7%A3%E6%9E%90/" rel="prev" title="概念名词解析">
+      <i class="fa fa-chevron-left"></i> 概念名词解析
     </a></div>
       <div class="post-nav-item">
-    <a href="/blog/2020/07/12/Automatically%20Labeled%20Data%20Generation%20for%20Large%20Scale%20Event%20Extraction/" rel="next" title="Automatically Labeled Data Generation for Large Scale Event Extraction">
-      Automatically Labeled Data Generation for Large Scale Event Extraction <i class="fa fa-chevron-right"></i>
+    <a href="/blog/2020/07/12/Event%20Detection%20and%20Co-reference%20with%20Minimal%20Supervision/" rel="next" title="Event detection and co-reference with minimal supervision">
+      Event detection and co-reference with minimal supervision <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -426,6 +514,7 @@
 
           </div>
           
+    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -472,7 +561,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#code"><span class="nav-number">1.</span> <span class="nav-text">code</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%93%E6%9C%89%E5%90%8D%E8%AF%8D"><span class="nav-number">2.</span> <span class="nav-text">专有名词</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#challenge%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">challenge：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Opportunities"><span class="nav-number">4.</span> <span class="nav-text">Opportunities:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Representation"><span class="nav-number">5.</span> <span class="nav-text">Representation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Model-%E6%A1%86%E5%9B%BE"><span class="nav-number">6.</span> <span class="nav-text">Model 框图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NLP-tool"><span class="nav-number">7.</span> <span class="nav-text">NLP tool</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EXTRACTING-EVENT-MENTIONS"><span class="nav-number">8.</span> <span class="nav-text">EXTRACTING EVENT MENTIONS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EXTRACTING-AND-RESOLVING-TEM-PORAL-EXPRESSIONS"><span class="nav-number">9.</span> <span class="nav-text">EXTRACTING AND RESOLVING TEM-PORAL EXPRESSIONS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CLASSIFICATION-OF-EVENT-TYPES"><span class="nav-number">10.</span> <span class="nav-text">CLASSIFICATION OF EVENT TYPES</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Inference"><span class="nav-number">11.</span> <span class="nav-text">Inference</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Algorithm"><span class="nav-number">12.</span> <span class="nav-text">Algorithm</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E7%BB%86%E8%8A%82%EF%BC%9A"><span class="nav-number">12.1.</span> <span class="nav-text">算法细节：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%84%E4%BB%B7"><span class="nav-number">12.2.</span> <span class="nav-text">评价</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ranking-Event"><span class="nav-number">13.</span> <span class="nav-text">Ranking Event</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C"><span class="nav-number">13.1.</span> <span class="nav-text">实验</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">13.2.</span> <span class="nav-text">相关工作</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E3%80%8EOpen-Domain-Event-Extraction-from-Twitter%E3%80%8F%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0"><span class="nav-number">1.</span> <span class="nav-text">『Open Domain Event Extraction from Twitter』阅读笔记</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#code"><span class="nav-number">2.</span> <span class="nav-text">code</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%93%E6%9C%89%E5%90%8D%E8%AF%8D"><span class="nav-number">3.</span> <span class="nav-text">专有名词</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#challenge%EF%BC%9A"><span class="nav-number">4.</span> <span class="nav-text">challenge：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Opportunities"><span class="nav-number">5.</span> <span class="nav-text">Opportunities:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Representation"><span class="nav-number">6.</span> <span class="nav-text">Representation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Model-%E6%A1%86%E5%9B%BE"><span class="nav-number">7.</span> <span class="nav-text">Model 框图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NLP-tool"><span class="nav-number">8.</span> <span class="nav-text">NLP tool</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EXTRACTING-EVENT-MENTIONS"><span class="nav-number">9.</span> <span class="nav-text">EXTRACTING EVENT MENTIONS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EXTRACTING-AND-RESOLVING-TEM-PORAL-EXPRESSIONS"><span class="nav-number">10.</span> <span class="nav-text">EXTRACTING AND RESOLVING TEM-PORAL EXPRESSIONS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CLASSIFICATION-OF-EVENT-TYPES"><span class="nav-number">11.</span> <span class="nav-text">CLASSIFICATION OF EVENT TYPES</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Inference"><span class="nav-number">12.</span> <span class="nav-text">Inference</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Algorithm"><span class="nav-number">13.</span> <span class="nav-text">Algorithm</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E7%BB%86%E8%8A%82%EF%BC%9A"><span class="nav-number">13.1.</span> <span class="nav-text">算法细节：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%84%E4%BB%B7"><span class="nav-number">13.2.</span> <span class="nav-text">评价</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ranking-Event"><span class="nav-number">14.</span> <span class="nav-text">Ranking Event</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C"><span class="nav-number">14.1.</span> <span class="nav-text">实验</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">14.2.</span> <span class="nav-text">相关工作</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -490,8 +579,31 @@
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/blog/categories/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blog/tags/">
+          
+        <span class="site-state-item-count">77</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
   </nav>
 </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JasonGuojz" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JasonGuojz" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/blog/jzguovulcan@gmail.com" title="E-Mail → jzguovulcan@gmail.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="skype:yourname?call|chat" title="Skype → skype:yourname?call|chat" rel="noopener" target="_blank"><i class="fa fa-fw fa-skype"></i>Skype</a>
+      </span>
+  </div>
 
 
 
@@ -519,6 +631,16 @@
     <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder"></span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="Symbols count total">191k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">2:54</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
   </div>
@@ -629,11 +751,40 @@
     MathJax.texReset();
     MathJax.typeset();
   }
-</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</script>
 
     
 
   
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : '2M2aiiBff85KzN3JvTFsCV2J-9Nh9j0Va',
+      appKey     : '7n1fFOWyaLnTBNpNjRhYsF0W',
+      placeholder: "Please write your comments here",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
 </body>
 </html>

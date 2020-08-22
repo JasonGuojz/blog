@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"jasonguojz.github.io","root":"/blog/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="event type通过实例自动生成，非分类方式，扩展event type集， 解决共指问题">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Event detection and co-reference with minimal supervision">
+<meta property="og:url" content="https://jasonguojz.github.io/blog/2020/07/12/Event%20Detection%20and%20Co-reference%20with%20Minimal%20Supervision/index.html">
+<meta property="og:site_name" content="Guo Jiazhen&#39;s Blog">
+<meta property="og:description" content="event type通过实例自动生成，非分类方式，扩展event type集， 解决共指问题">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image/image-20200308193457898.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image/image-20200308195646493.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image/image-20200308195931031.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image/image-20200308195955412.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image/image-20200308201247562.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image-20200707110825519.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image-20200707115835192.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image-20200707184516462.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image-20200707223550299.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image-20200708000900237.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image-20200810113906464.png">
+<meta property="article:published_time" content="2020-07-11T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-08-22T09:07:21.415Z">
+<meta property="article:tag" content="Freebase">
+<meta property="article:tag" content="SRL">
+<meta property="article:tag" content="co-reference">
+<meta property="article:tag" content="pairwise similarity">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image/image-20200308193457898.png">
+
+<link rel="canonical" href="https://jasonguojz.github.io/blog/2020/07/12/Event%20Detection%20and%20Co-reference%20with%20Minimal%20Supervision/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Event detection and co-reference with minimal supervision | Guo Jiazhen's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Guo Jiazhen's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blog/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags<span class="badge">77</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/blog/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories<span class="badge">28</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">21</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jasonguojz.github.io/blog/2020/07/12/Event%20Detection%20and%20Co-reference%20with%20Minimal%20Supervision/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="谦卑">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Guo Jiazhen's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Event detection and co-reference with minimal supervision
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-07-12 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-12T00:00:00+08:00">2020-07-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-22 17:07:21" itemprop="dateModified" datetime="2020-08-22T17:07:21+08:00">2020-08-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Event-Extraction/" itemprop="url" rel="index"><span itemprop="name">Event Extraction</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/blog/2020/07/12/Event%20Detection%20and%20Co-reference%20with%20Minimal%20Supervision/" class="post-meta-item leancloud_visitors" data-flag-title="Event detection and co-reference with minimal supervision" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/blog/2020/07/12/Event%20Detection%20and%20Co-reference%20with%20Minimal%20Supervision/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/blog/2020/07/12/Event%20Detection%20and%20Co-reference%20with%20Minimal%20Supervision/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>10k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>9 mins.</span>
+            </span>
+            <div class="post-description"><div align=center> event type通过实例自动生成，非分类方式，扩展event type集， 解决共指问题</div></div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <a id="more"></a>
+<h3 id="『Event-detection-and-co-reference-with-minimal-supervision』阅读笔记"><a href="#『Event-detection-and-co-reference-with-minimal-supervision』阅读笔记" class="headerlink" title="『Event detection and co-reference with minimal supervision』阅读笔记"></a>『Event detection and co-reference with minimal supervision』阅读笔记</h3><ol>
+<li>weakly supervised algorithm——i唯一监督信息是提供对于event type 的先验知识，限定了type 的feature vector</li>
+<li>Event detection: constructing a <strong>feature vector</strong> using several instances of the type<strong>,</strong> and <strong>measures similarity</strong> with the <strong>event vector(embedding)</strong> of a text;</li>
+<li>解决co-reference problem: measures similarity between two event vector</li>
+<li>similarity都是在语义层面上，两个vector间的相似度度量用的都是余弦相似性</li>
+<li>Freebase</li>
+<li>event表示：SRL 以谓词为中心(认为一般trigger为谓词)</li>
+<li>对事件向量的表示做修改，更强调谓词的作用，具体使用的现有的embedding方法看具体的效果，没有特别指定</li>
+<li>逆着用 event type classification过程——已知type的vector，用于Event Mention Detection</li>
+<li>共指co-reference：比较event vector 的相似度</li>
+</ol>
+<hr>
+<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h3><p><strong>Uses a weakly supervised algorithm to tackle Event detection and co-reference problem</strong>. </p>
+<p>In the article, both <strong>event detection and co-reference problem</strong> both are considered <strong>similarity detection problems.</strong> Using several instances of each type as event vectors of that type, calculating the similarity between the <strong>new event vector</strong> and <strong>event vector of each type</strong>, judging <strong>whether the event belongs to that type based on similarity.</strong></p>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image/image-20200308193457898.png" alt="image-20200308193457898" style="zoom:140%;" /></p>
+<center>the MSEP framwork. Event example is the only source of suppervison </center>  
+
+<ul>
+<li><strong>Event detection</strong>:   identifying whether an event in context is semantically related to a set of <strong>events of a specific type.</strong></li>
+<li><strong>Co-reference problem</strong>:   whether two event mentions are semantically similar enough to indicate that the author intends to refer to the same thing.</li>
+</ul>
+<p>As for Event detection, more like <strong>constructing a feature vector using several instances of the type</strong>, and measures similarity with the event vector of a text; </p>
+<p>As for co-reference problem, <strong>measures similarity between two event vector.</strong></p>
+<ul>
+<li><strong>How to represent an event</strong>:  using SRL, different embedding  methods(ESA, BC, W2V, DEP) to convert event components  structured vector representation.</li>
+<li><strong>How to measure similarity</strong>:  calculating the cosine distance.</li>
+</ul>
+<h4 id="Structured-Vector-Representation"><a href="#Structured-Vector-Representation" class="headerlink" title="Structured Vector Representation"></a>Structured Vector Representation</h4><p> Event triggers are mostly predicates of sentences or clauses. Predicates roughly corresponds to event types. </p>
+<p> Map SRL arguments to : action, agent<em>sub</em>, agent<em>obj</em> , location and time. </p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image/image-20200308195646493.png" alt="image-20200308195646493"></p>
+<h4 id="Event-Mention-Detection"><a href="#Event-Mention-Detection" class="headerlink" title="Event Mention Detection"></a>Event Mention Detection</h4><p>We define the <strong><em>event type representation</em></strong> as the <strong>numerical average</strong> of all vector representations corresponding to example events under that type.</p>
+<p>similarity measurement: </p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image/image-20200308195931031.png" alt="image-20200308195931031"></p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image/image-20200308195955412.png" alt="image-20200308195955412"></p>
+<h4 id="Event-co-reference"><a href="#Event-co-reference" class="headerlink" title="Event co-reference"></a>Event co-reference</h4><p>We compare agent<em>sub</em> and agent<em>obj</em> . If none of the types for the aligned event arguments match, this pair is determined to be in conflflict. If the event argument is missing, we deem it compatible with any type.</p>
+<p>we generate a “conflict set”. </p>
+<p>For event not in “conflict set”,</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image/image-20200308201247562.png" alt="image-20200308201247562"></p>
+<p><a href="[https://juewang.me/posts/%5B2018.1.21%5DEvent-detection-and-co-referentce/](https://juewang.me/posts/[2018.1.21]Event-detection-and-co-referentce/">reference——jue wang的blog</a>)</p>
+<hr>
+<h3 id="Introduction-1"><a href="#Introduction-1" class="headerlink" title="Introduction"></a>Introduction</h3><h4 id="自然语言理解的一个重要方面涉及到对事件及其之间的关系进行识别和分类"><a href="#自然语言理解的一个重要方面涉及到对事件及其之间的关系进行识别和分类" class="headerlink" title="自然语言理解的一个重要方面涉及到对事件及其之间的关系进行识别和分类"></a>自然语言理解的一个重要方面涉及到对<strong><em>事件及其之间的关系进行识别和分类</em></strong></h4><h4 id="解决从少量的数据中学习复杂的模型的过拟合情况"><a href="#解决从少量的数据中学习复杂的模型的过拟合情况" class="headerlink" title="解决从少量的数据中学习复杂的模型的过拟合情况"></a><strong>解决从少量的数据中学习复杂的模型的过拟合情况</strong></h4><p>developing an event detection and co-reference system with minimal supervision,  in  the  form  of  <strong>a  few  event  examples</strong>. </p>
+<p>We view these tasks as <strong>semantic similarity</strong> problems between <strong>event mentions</strong> or <strong>event mentions  and  an  ontology</strong> <strong>of  types</strong>我们将这些任务视为事件提及或事件与类型本体之间的语义相似性问题</p>
+<p>有助于使用大量域外数据，</p>
+<p>模型利用文本的结构our semantic relatedness function exploits the structure of the text by making use of a semantic-role-labeling based representation of an event.</p>
+<p>我们的语义相关性功能利用事件的基于语义角色标记的表示来利用文本的结构。</p>
+<ol>
+<li>理解事件还需要理解它们之间的关系Understanding events also necessitates  understanding  relations  among  them。关系有助于确定两个文本片段是否表示同一事件</li>
+<li>the frame-based structure of events基于帧的事件结构必须解决多个耦合问题(multiple coupled problems)，这些问题很难单独研究。</li>
+<li>可能是更核心的问题：whether current set of events’ definitions is adequate </li>
+<li>该领域当前的评估方法侧重于事件的有限领域 limited  domain of event</li>
+<li>Consequently, this allows researchers to train supervised systems that are tailored to these sets of events and that overfit the small domain covered in the annotated data, rather than address the realistic problem of understanding events in text训练的模型是适合于带注释的数据所覆盖的小范围的监督系统</li>
+<li>根本上说，事件检测是关于识别上下文中的事件是否与特定类型的事件集有语义上的关联；事件共同引用是关于两个事件提及在语义上是否足够相似，以表明作者打算引用相同的内容。如果将事件检测和共引用表示为语义相关性问题，则可以对其进行扩展以处理更多类型，并且有可能跨领域进行概括。此外，这样做有助于我们使用大量数据，这些数据不属于现有带注释的事件集合，甚至不属于同一域。</li>
+<li>主要的问题是 a. how to represent events。 b.  how to model event similarity。 这些都很难，因为events have structure</li>
+</ol>
+<h4 id="1-我们的框架："><a href="#1-我们的框架：" class="headerlink" title="1   我们的框架："></a>1   我们的框架：</h4><ol>
+<li><p>which essentially requires no labeled data；Event examples 是唯一的监督来源，用于产生 Example vectors</p>
+</li>
+<li><p>在实践中，为了将事件映射到事件本体(map an event mention to an event ontology)（作为与用户通信的方式），对于用户想要提取的每种类型，我们只需要用纯文本形式的几个事件示例即可。event  type 用几个example作为definition</p>
+</li>
+<li><p>与标准无监督方法相比，我们的方法所做的假设要少得多less assumption，后者通常需要实例的集合和实例之间的近似相似性才能最终学习模型。</p>
+</li>
+<li><p>给定事件类型定义，我们可以classify a single event into  a  provided  ontology 然后判断两者是否are co-referent</p>
+</li>
+<li><p>从这个意义上讲，我们的方法类似于所谓的无数据分类dataless classification</p>
+</li>
+<li><p>我们的方法基于两个关键思想：</p>
+<p>a.  首先，为了表示事件结构event structures，我们使用通用的名义general purpose nominal和语言语义角色标记verbial semantic role labeling representation（SRL）表示。这使我们能够开发事件的结构化表示。</p>
+<p>b. 我们将事件组件embed event component在保持结构的同时嵌入到多个语义空间中，在上下文，主题和句法层面上。 multiple semantic space at a contextual, topical, and syntactic levels.</p>
+<p>这些语义表示是从大量文本中得出的，其方式完全独立于手头的任务，并且用于表示事件提及和事件类型，来用于分类事件</p>
+<p>1). 这些语义空间的组合以及事件的结构化矢量表示，使我们能够直接确定候选事件的提及是否为有效事件。如果是，则是哪种类型。</p>
+<p>2). <strong>且</strong>在具有相同表示形式的情况下，我们可以评估事件相似性，并确定两个事件提及是否是共同引用，所以这个模型can also adapt to new domains without any training</p>
+</li>
+<li><p>A few event examples就是MSEP所需要的全部监督信息了。这些示例甚至一劳永逸地确定了需要确定的几个决策阈值，并用于我们评估的所有测试案例。</p>
+</li>
+</ol>
+<h4 id="专有词汇"><a href="#专有词汇" class="headerlink" title="专有词汇"></a>专有词汇</h4><ol>
+<li>event mentions</li>
+<li>semantic-role-labeling based representation of an event</li>
+<li>event  co-reference on <strong>benchmark data sets</strong></li>
+<li>transfer across domains 跨域转移</li>
+<li>event co-reference  problem——determining  whether  two  snippets  of text represent the same event or not</li>
+<li>dataless classification(Chang et al.,  2008;  Song and Roth,2014).</li>
+<li>通用的名义general purpose nominal</li>
+<li>语言语义角色标记verbial semantic role labeling representation（SRL）</li>
+<li>ESA vector</li>
+<li>seed-based event trigger labeling technique employed in Bronstein et al. (2015)</li>
+<li>the  mention-pair  model  in  entity  co-reference (Ng and Cardie, 2002; Bengtson and Roth,2008;  Stoyanov   et  al.,  2010),</li>
+<li>the  Illinois  Wikification  (Chengand  Roth,  2013)  tool </li>
+<li>Explicit  Semantic  Analysis(ESA), Brown Cluster (BC), Word2Vec (W2V) and Dependency-Based Word Embedding (DEP) </li>
+<li>TF-IDF vector</li>
+<li>event detection 即 <strong>trigger  identification</strong></li>
+</ol>
+<p>​    </p>
+<h3 id="2-The-MSEP-System"><a href="#2-The-MSEP-System" class="headerlink" title="2   The MSEP System"></a>2   The MSEP System</h3><h4 id="2-1-Structured-Vector-Representation"><a href="#2-1-Structured-Vector-Representation" class="headerlink" title="2.1 Structured Vector Representation"></a>2.1 Structured Vector Representation</h4><ol>
+<li><p>事件结构和句子结构存在相似性，事件触发器 Event  triggers主要是句子或从句 clauses的谓词Predicates。谓词可以消除歧义sense disambiguated</p>
+</li>
+<li><p>事件自变量Event arguments主要是实体提及entity mentions或时间/空间自变量temporal/spatial argument。它们充当事件中的特定角色，类似于为谓词分配角色标签的SRL参数</p>
+</li>
+<li><p>Illinois SRL <strong>pre-process</strong> the text。 good coverage of SRL predicates and arguments on event triggers and arguments</p>
+</li>
+<li><p>评估事件触发器和事件参数event  triggers  and  event  arguments,的SRL覆盖率。   对于事件触发器，我们仅关注recall，因为我们希望事件提及检测模块vent mention detection能够过滤掉大多数非触发谓词。即使我们仅获得近似的事件参数，将其归类为五个抽象角色也比确定事件触发器的确切角色标签更容易，更可靠。</p>
+</li>
+<li><p>我们确定了五个最重要的抽象事件语义成分：<img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image-20200707110825519.png" alt="image-20200707110825519" style="zoom:67%;display:inline" align="middle"  />为了将SRL参数映射到这些事件参数，执行以下过程：</p>
+<p>a.  set predicates as actions,and preserve SRL negations for action;</p>
+<p>b.   set SRL subject as$agent_{sub}$</p>
+<p>c.   set SRL object and indirect object as $agent_{obj}$</p>
+<p>d.  set SRL spatial argument as event  location如果没有此类SRL标签，则将扫描该动作所属的句/句中的任何NER位置标签 NER location label。我们会根据NER信息设置位置set the location according to NER information如果它存在</p>
+<p>e.   We set the SRL temporal argument as event time.  如果没有这种 SRL  label, 则use the Illinois Temporal Expression Extractor  在事件的主句或从句中找到temporal argument</p>
+<p>f.  允许$agent_{sub}、agent_{obj}$、location or time missing， 但是action一定有</p>
+<p><strong>在2.3中我们将每个事件分量event  component转换为其相应的向量vector  representation表示形式</strong></p>
+</li>
+<li><p>我们将action所在的主句或从句作为上下文信息，append its corresponding vector to the event representation。   对missing 的event arguments, we set the corresponding  vector  to  be  “NIL”  (we  set  each  position as “NaN”）</p>
+</li>
+<li>我们还通过连接更多的文本片段来增强事件向量表示，以增强动作和其他自变量之间的交互<img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image-20200707115835192.png" alt="image-20200707115835192" style="zoom:67%;display:inline" align="middle" />Here, “+” means that we first put text fragments together and then convert the combined text fragment into an ESA vector</li>
+<li>本质上，我们将事件结构展宽以保留事件参数的对齐方式，以便结构化信息可以反映在向量空间中。</li>
+</ol>
+<h4 id="2-2-Event-Mention-Detection"><a href="#2-2-Event-Mention-Detection" class="headerlink" title="2.2    Event Mention Detection"></a>2.2    Event Mention Detection</h4><ol>
+<li><p>我们将针对每个事件类型标签下描述的事件示例使用ACE注释准则turn to ACE annotation guidelines for event examples described under each event type label 即在ACE的guidelines event types下找event examples</p>
+</li>
+<li><p>则event  type的表示可以用the numerical average of all vector representations corresponding to example events under that type.</p>
+</li>
+<li><p>我们使用事件候选者event candidate与事件类型event type表示之间的相似性来确定候选者是否属于事件类型</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image-20200707184516462.png" alt="image-20200707184516462" style="zoom: 67%;" /></p>
+<p>请注意，可能缺少事件参数 event  argument（NIL）。在这种情况下，我们使用该特定组件的所有非NIL相似度分数的平均值作为贡献分数</p>
+</li>
+<li><p>这些平均贡献分数独立于语料库，可以提前进行预先计算。我们使用临界值确定事件不属于任何事件类型，因此可以将其消除。此阈值仅通过调整事件示例集来设置，该事件示例与语料库无关</p>
+</li>
+</ol>
+<h4 id="2-3-Event-Co-reference"><a href="#2-3-Event-Co-reference" class="headerlink" title="2.3    Event Co-reference"></a>2.3    Event Co-reference</h4><ol>
+<li><p>在应用共同引用模型之前，我们首先使用外部知识库来识别冲突事件，<strong>the  Illinois  Wikification tool </strong> link  event  arguments  to Wikipedia pages</p>
+</li>
+<li><p>使用Wikipedia ID，我们将事件参数event arguments映射到Freebase条目。我们将顶层Freebase类型视为事件参数类型event argument type。一个事件参数可以包含多个wiki的实体entities，从而导致多个Wikipedia页面以及一组Freebase类型。我们还使用NER标签扩充了参数类型集argument type set：PER（人）和ORG（组织）。如果我们检测到这样的命名实体，则添加NER标签之一</p>
+</li>
+<li><p>conflict:      we check event arguments $agent_{sub}、agent_{obj}$ respectively.如果对齐的事件参数的类型都不匹配，则确定 this pair该对存在冲突。 如果缺少事件参数，我们认为它与任何类型兼容。。通过检查是否有conflict，得到一个$Set_{conflict}$，里面的元素间不会有共指链接 co-reference links</p>
+</li>
+<li><p>left-linking greedy algorithm————for performing  event  co-reference  inference：：</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image-20200707223550299.png" alt="image-20200707223550299" style="zoom: 67%;" /></p>
+</li>
+<li><p>当$S(e_p,e_{k+1})$ event-pair similarity大于一个阈值时，make  co-reference  links。这个阈值是tuned only on event examples ahead of time。这里的$e_{k+1}$相当于共指聚类的聚类中心，当$e_{k+1}$和$e\in\{e_1,e_2,e_3,…,e_k\}$所有的event的相似度都低于阈值时，将$e_{k+1}$作为一个新的聚类中心的</p>
+</li>
+</ol>
+<h3 id="3-Vector-Representations"><a href="#3-Vector-Representations" class="headerlink" title="3.   Vector Representations"></a>3.   Vector Representations</h3><p>测试了包括 Explicit  Semantic  Analysis(ESA), Brown Cluster (BC), Word2Vec (W2V) and Dependency-Based Word Embedding (DEP)  分别将文本转换为矢量。然后，我们将事件的所有组成部分串联在一起，以形成结构化的向量表示形式。</p>
+<h4 id="3-1-Explicit-Semantic-Analysis-ESA显式语义分析"><a href="#3-1-Explicit-Semantic-Analysis-ESA显式语义分析" class="headerlink" title="3.1 Explicit  Semantic  Analysis ESA显式语义分析"></a>3.1 Explicit  Semantic  Analysis ESA显式语义分析</h4><p>使用Wikipedia作为外部知识库为给定的文本片段生成概念generate  concepts for a given fragment of text （Gabrilovich和Markovitch，2009年）。ESA首先将给定的文本片段表示为TF-IDF向量，然后对每个单词使用一个反向索引来搜索Wikipedia语料库。因此，文本片段表示是对应于其单词的概念向量的加权组合。我们使用与Chang等人（2008）中相同的设置来过滤掉少于100个单词的页面和少于5个超链接的页面。为了在ESA表示的有效性和成本之间取得平衡，我们使用权重最高的200个概念。因此，我们将每个文本片段转换为数以百万计的非常稀疏的矢量（但我们仅存储200个非零值）</p>
+<h4 id="3-2-Brown-Cluster"><a href="#3-2-Brown-Cluster" class="headerlink" title="3.2  Brown Cluster"></a>3.2  Brown Cluster</h4><p>support abstraction in NLP tasks，测量单词的分布相似度measuring  words’  distributional  similarities。 This method generates a hierarchical tree of word clusters by evaluating the word co-occurrence based on a  n-gram  mode</p>
+<p><strong>use the implementation by Song and Roth (2014) </strong> generated over the latest Wikipedia dump转储.使用长度为4,6和10的路径前缀的组合作为我们的BC表示。Thus, we convert each word to a vector of $2^4+2^6+2^{10}=1104$dimensions</p>
+<h4 id="3-3-Word2Vec"><a href="#3-3-Word2Vec" class="headerlink" title="3.3  Word2Vec"></a>3.3  Word2Vec</h4><p> the skip-gram tool by Mikolov etal. (2013) over the latest Wikipedia dump, resulting in word vectors of dimensionality 200.</p>
+<h4 id="3-4-Dependency-Based-Embedding"><a href="#3-4-Dependency-Based-Embedding" class="headerlink" title="3.4  Dependency-Based Embedding"></a>3.4  Dependency-Based Embedding</h4><p>DEP is the generalization of the skip-gram model with negative sampling to include arbitrary contexts.  In particular, it deals with dependency-based contexts, and produces markedly different embeddings. DEP exhibits more functional similarity than the original skip-gram embeddings (Levy and Goldberg,  2014).  We directly use the released 300-dimension word embeddings</p>
+<p>请注意，对于ESA，这是直接的文本向量转换。但是对于BC，W2V和DEP，我们首先从文本中remove stop words，然后对所有剩余的词向量进行元素平均，以生成文本碎片的结果向量表示。</p>
+<h3 id="4-Experiments"><a href="#4-Experiments" class="headerlink" title="4  Experiments"></a>4  Experiments</h3><h4 id="4-1-Datasets"><a href="#4-1-Datasets" class="headerlink" title="4.1   Datasets"></a>4.1   Datasets</h4><p><strong>ACE</strong> ACE-2005英语语料库（NIST，2005）包含细粒度的事件注释event  annotations，包括事件触发器，参数，实体和时间戳记注释event trigger, argument, entity, and time-stamp annotations。我们从新闻报道中选择40个文档进行事件检测评估，其余用于培训（与Chen等人（2015年）相同）。我们对事件共同引用进行了十折交叉验证</p>
+<p><strong>TAC-KBP</strong>   TAC-KBP-2015语料库带有事件块event  nuggets ，分为38种类型，并且事件之间具有共同引用关系.我们使用官方TAC提供的训练/测试数据拆分</p>
+<h4 id="4-2-Compared-Systems"><a href="#4-2-Compared-Systems" class="headerlink" title="4.2  Compared Systems"></a>4.2  Compared Systems</h4><h4 id="4-3-Evaluation-Metrics"><a href="#4-3-Evaluation-Metrics" class="headerlink" title="4.3  Evaluation Metrics"></a>4.3  Evaluation Metrics</h4><p>对于事件检测，我们使用标准精度，召回率和F1指标。对于事件共指event  co-reference，我们使用标准F1指标比较所有系统。 </p>
+<p> <img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image-20200708000900237.png" alt="image-20200708000900237" style="zoom: 67%;" /></p>
+<p>我们使用这四个指标的平均得分（AVERAGE）作为主要比较指标。</p>
+<h4 id="4-4-result"><a href="#4-4-result" class="headerlink" title="4.4 result"></a>4.4 result</h4><p>在事件检测上，SSED  achieves  state-of-the-art  performance。。。SEED和MSEP都是使用SRL谓词作为输入，因此可以使用更好的SRL模块进一步改进。</p>
+<h4 id="4-5-Results-for-Event-Co-reference"><a href="#4-5-Results-for-Event-Co-reference" class="headerlink" title="4.5  Results for Event Co-reference"></a>4.5  Results for Event Co-reference</h4><p>关于如何进行Semantic Role Labeling，先引用juewang博客中的内容<a href="[https://juewang.me/posts/%5B2018.1.21%5DEvent-detection-and-co-referentce/](https://juewang.me/posts/[2018.1.21]Event-detection-and-co-referentce/">引用</a>)</p>
+<p><img src="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Event Detection and Co-reference with Minimal Supervision/image-20200810113906464.png" alt="image-20200810113906464" style="zoom:80%;" /></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>guo jiazhen
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://jasonguojz.github.io/blog/2020/07/12/Event%20Detection%20and%20Co-reference%20with%20Minimal%20Supervision/" title="Event detection and co-reference with minimal supervision">https://jasonguojz.github.io/blog/2020/07/12/Event Detection and Co-reference with Minimal Supervision/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/Freebase/" rel="tag"># Freebase</a>
+              <a href="/blog/tags/SRL/" rel="tag"># SRL</a>
+              <a href="/blog/tags/co-reference/" rel="tag"># co-reference</a>
+              <a href="/blog/tags/pairwise-similarity/" rel="tag"># pairwise similarity</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/2020/07/11/Open%20Domain%20Event%20Extraction%20from%20Twitter/" rel="prev" title="Open Domain Event Extraction from Twitter">
+      <i class="fa fa-chevron-left"></i> Open Domain Event Extraction from Twitter
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/blog/2020/07/13/Liberal%20Event%20Extraction%20and%20Event%20Schema%20Induction/" rel="next" title="Liberal Event Extraction and Event Schema Induction">
+      Liberal Event Extraction and Event Schema Induction <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E3%80%8EEvent-detection-and-co-reference-with-minimal-supervision%E3%80%8F%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0"><span class="nav-number">1.</span> <span class="nav-text">『Event detection and co-reference with minimal supervision』阅读笔记</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Abstract"><span class="nav-number">2.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction"><span class="nav-number">3.</span> <span class="nav-text">Introduction</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Structured-Vector-Representation"><span class="nav-number">3.1.</span> <span class="nav-text">Structured Vector Representation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Event-Mention-Detection"><span class="nav-number">3.2.</span> <span class="nav-text">Event Mention Detection</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Event-co-reference"><span class="nav-number">3.3.</span> <span class="nav-text">Event co-reference</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-1"><span class="nav-number">4.</span> <span class="nav-text">Introduction</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E7%90%86%E8%A7%A3%E7%9A%84%E4%B8%80%E4%B8%AA%E9%87%8D%E8%A6%81%E6%96%B9%E9%9D%A2%E6%B6%89%E5%8F%8A%E5%88%B0%E5%AF%B9%E4%BA%8B%E4%BB%B6%E5%8F%8A%E5%85%B6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB%E8%BF%9B%E8%A1%8C%E8%AF%86%E5%88%AB%E5%92%8C%E5%88%86%E7%B1%BB"><span class="nav-number">4.1.</span> <span class="nav-text">自然语言理解的一个重要方面涉及到对事件及其之间的关系进行识别和分类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E4%BB%8E%E5%B0%91%E9%87%8F%E7%9A%84%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%AD%A6%E4%B9%A0%E5%A4%8D%E6%9D%82%E7%9A%84%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%BF%87%E6%8B%9F%E5%90%88%E6%83%85%E5%86%B5"><span class="nav-number">4.2.</span> <span class="nav-text">解决从少量的数据中学习复杂的模型的过拟合情况</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E6%88%91%E4%BB%AC%E7%9A%84%E6%A1%86%E6%9E%B6%EF%BC%9A"><span class="nav-number">4.3.</span> <span class="nav-text">1   我们的框架：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%93%E6%9C%89%E8%AF%8D%E6%B1%87"><span class="nav-number">4.4.</span> <span class="nav-text">专有词汇</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-The-MSEP-System"><span class="nav-number">5.</span> <span class="nav-text">2   The MSEP System</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-Structured-Vector-Representation"><span class="nav-number">5.1.</span> <span class="nav-text">2.1 Structured Vector Representation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-Event-Mention-Detection"><span class="nav-number">5.2.</span> <span class="nav-text">2.2    Event Mention Detection</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-Event-Co-reference"><span class="nav-number">5.3.</span> <span class="nav-text">2.3    Event Co-reference</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Vector-Representations"><span class="nav-number">6.</span> <span class="nav-text">3.   Vector Representations</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-Explicit-Semantic-Analysis-ESA%E6%98%BE%E5%BC%8F%E8%AF%AD%E4%B9%89%E5%88%86%E6%9E%90"><span class="nav-number">6.1.</span> <span class="nav-text">3.1 Explicit  Semantic  Analysis ESA显式语义分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-Brown-Cluster"><span class="nav-number">6.2.</span> <span class="nav-text">3.2  Brown Cluster</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-Word2Vec"><span class="nav-number">6.3.</span> <span class="nav-text">3.3  Word2Vec</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-Dependency-Based-Embedding"><span class="nav-number">6.4.</span> <span class="nav-text">3.4  Dependency-Based Embedding</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Experiments"><span class="nav-number">7.</span> <span class="nav-text">4  Experiments</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-Datasets"><span class="nav-number">7.1.</span> <span class="nav-text">4.1   Datasets</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-Compared-Systems"><span class="nav-number">7.2.</span> <span class="nav-text">4.2  Compared Systems</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-Evaluation-Metrics"><span class="nav-number">7.3.</span> <span class="nav-text">4.3  Evaluation Metrics</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-result"><span class="nav-number">7.4.</span> <span class="nav-text">4.4 result</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-5-Results-for-Event-Co-reference"><span class="nav-number">7.5.</span> <span class="nav-text">4.5  Results for Event Co-reference</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name"></p>
+  <div class="site-description" itemprop="description">谦卑</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/blog/categories/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blog/tags/">
+          
+        <span class="site-state-item-count">77</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JasonGuojz" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JasonGuojz" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/blog/jzguovulcan@gmail.com" title="E-Mail → jzguovulcan@gmail.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="skype:yourname?call|chat" title="Skype → skype:yourname?call|chat" rel="noopener" target="_blank"><i class="fa fa-fw fa-skype"></i>Skype</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="Symbols count total">191k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">2:54</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/blog/js/utils.js"></script>
+
+<script src="/blog/js/motion.js"></script>
+
+
+<script src="/blog/js/schemes/muse.js"></script>
+
+
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/blog/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : '2M2aiiBff85KzN3JvTFsCV2J-9Nh9j0Va',
+      appKey     : '7n1fFOWyaLnTBNpNjRhYsF0W',
+      placeholder: "Please write your comments here",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>
