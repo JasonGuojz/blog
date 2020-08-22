@@ -42,7 +42,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200308154402927.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/JasonGuojz/JasonGuojz.github.io/master/images/Open Domain Event Extraction from Twitter/image-20200308154656117.png">
 <meta property="article:published_time" content="2020-07-10T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-08-22T09:05:46.621Z">
+<meta property="article:modified_time" content="2020-08-22T12:29:54.325Z">
 <meta property="article:tag" content="gibbs sampling">
 <meta property="article:tag" content="twitter">
 <meta property="article:tag" content="linear chain CRF model">
@@ -237,7 +237,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-22 17:05:46" itemprop="dateModified" datetime="2020-08-22T17:05:46+08:00">2020-08-22</time>
+                <time title="Modified: 2020-08-22 20:29:54" itemprop="dateModified" datetime="2020-08-22T20:29:54+08:00">2020-08-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -301,7 +301,8 @@
 
       
         <a id="more"></a>
-<h3 id="『Open-Domain-Event-Extraction-from-Twitter』阅读笔记"><a href="#『Open-Domain-Event-Extraction-from-Twitter』阅读笔记" class="headerlink" title="『Open Domain Event Extraction from Twitter』阅读笔记"></a>『Open Domain Event Extraction from Twitter』阅读笔记</h3><ol>
+<h3 id="『Open-Domain-Event-Extraction-from-Twitter』阅读笔记"><a href="#『Open-Domain-Event-Extraction-from-Twitter』阅读笔记" class="headerlink" title="『Open Domain Event Extraction from Twitter』阅读笔记"></a>『Open Domain Event Extraction from Twitter』阅读笔记</h3><p><a target="_blank" rel="noopener" href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.481.6809&amp;rep=rep1&amp;type=pdf">pdf</a></p>
+<ol>
 <li>Open Domain</li>
 <li>根据<strong>[Named entity recognition in tweets: An experimental study.]</strong>中的模型 twitter文本有较多OOV(用Brown Cluster对lexical variations产生的OOV进行聚类来解决OOV)，manually annotated tweets as in-domain data 用于train POS system(特殊的词性标注集)，CRF(包含Brown Cluster的feature函数以及以及POS dictionary，spelling and contextual feature)，来完成POS tag任务。 named entity segmentation和classification任务的具体细节见文章</li>
 <li>event phrase extraction——即EE任务中的对event mention的提取，用 linear chain CRF model作为序列标注任务的模型，识别trigger(这里的CRF用到的特征函数包括 contextual, dictionary, and orthographic features, and also include features based on our Twitter-tuned POS tagger [Named entity recognition in tweets: An experimental study], and dictionaries of event terms gathered from WordNet by Sauri et al.[Evita: a robust event recognizer for QA systems.])</li>
